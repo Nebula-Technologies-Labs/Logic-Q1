@@ -5,6 +5,11 @@ import com.logicq1.crm.dto.RegisterRequest;
 import com.logicq1.crm.entity.User;
 import com.logicq1.crm.repository.UserRepository;
 import com.logicq1.crm.service.AuthService;
+import com.logicq1.crm.service.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +23,9 @@ public class AuthController {
     private final AuthService authService;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthenticationManager authManager;
+    @Autowired
+    private JwtService jwtService;
 
     @GetMapping("/")
     public String home() {
@@ -33,5 +41,14 @@ public class AuthController {
         userRepository.save(user);
 
         return "User Registered Successfully";
+    }
+
+    @PostMapping("/login")
+    public  String login(@RequestBody User user){
+        Authentication authentication=
+                authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
+        if(authentication.isAuthenticated())
+            return jwtService.generateToken(user.getUsername());
+        return "fail";
     }
 }
