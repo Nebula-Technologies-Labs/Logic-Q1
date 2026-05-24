@@ -1,14 +1,14 @@
-package com.logicq1.crm.security;
+package com.logicq1.crm.modules.user.service;
 
-import com.logicq1.crm.entity.User;
-import com.logicq1.crm.repository.UserRepository;
+import com.logicq1.crm.modules.user.entity.User;
+import com.logicq1.crm.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 

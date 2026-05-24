@@ -1,11 +1,10 @@
-package com.logicq1.crm.controller;
+package com.logicq1.crm.modules.auth.controller;
 
-import com.logicq1.crm.dto.LoginRequest;
-import com.logicq1.crm.dto.RegisterRequest;
-import com.logicq1.crm.entity.User;
-import com.logicq1.crm.repository.UserRepository;
-import com.logicq1.crm.service.AuthService;
-import com.logicq1.crm.service.JwtUtil;
+import com.logicq1.crm.modules.user.entity.User;
+import com.logicq1.crm.modules.user.repository.UserRepository;
+import com.logicq1.crm.modules.auth.service.AuthService;
+import com.logicq1.crm.services.jwt.JwtUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +18,12 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authManager;
-    @Autowired
     private JwtUtil jwtService;
 
     @GetMapping("/")

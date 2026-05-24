@@ -1,6 +1,6 @@
-package com.logicq1.crm.service;
+package com.logicq1.crm.modules.auth.service;
 
-import com.logicq1.crm.repository.UserRepository;
+import com.logicq1.crm.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,8 +9,5 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepo;
-
-
-
 
 }
