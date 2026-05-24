@@ -5,7 +5,7 @@ import com.logicq1.crm.dto.RegisterRequest;
 import com.logicq1.crm.entity.User;
 import com.logicq1.crm.repository.UserRepository;
 import com.logicq1.crm.service.AuthService;
-import com.logicq1.crm.service.JwtService;
+import com.logicq1.crm.service.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +25,7 @@ public class AuthController {
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authManager;
     @Autowired
-    private JwtService jwtService;
+    private JwtUtil jwtService;
 
     @GetMapping("/")
     public String home() {
