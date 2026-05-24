@@ -1,5 +1,7 @@
 package com.logicq1.crm.configs;
 
+import com.logicq1.crm.services.OAuth.Google.handler.GoogleOAuthSuccessHandler;
+import com.logicq1.crm.services.jwt.JwtFilter;
 import com.logicq1.crm.services.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private UserDetailsService userDetailsService;
-    private JwtUtil.JwtFilter jwtFilter;
+    private JwtFilter jwtFilter;
+    private GoogleOAuthSuccessHandler googleOAuthSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,6 +41,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .oauth2Login(oAuth -> oAuth.successHandler(googleOAuthSuccessHandler))
                 .addFilterBefore(jwtFilter,
                         UsernamePasswordAuthenticationFilter.class);
 
