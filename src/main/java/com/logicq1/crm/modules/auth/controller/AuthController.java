@@ -6,6 +6,8 @@ import com.logicq1.crm.modules.auth.service.AuthService;
 import com.logicq1.crm.services.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,7 +31,7 @@ public class AuthController {
         return "CRM Backend Running";
     }
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
+    public ResponseEntity<String> register(@RequestBody User user) {
 
         user.setPassword(
                 passwordEncoder.encode(user.getPassword())
@@ -37,15 +39,15 @@ public class AuthController {
 
         userRepository.save(user);
 
-        return "User Registered Successfully";
+        return new ResponseEntity<>("User Registered Successfully", HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public  String login(@RequestBody User user){
+    public  ResponseEntity<String> login(@RequestBody User user){
         Authentication authentication=
                 authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
         if(authentication.isAuthenticated())
-            return jwtService.generateToken(user.getUsername());
-        return "fail";
+            return new ResponseEntity<>(jwtService.generateToken(user.getUsername()),HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }
