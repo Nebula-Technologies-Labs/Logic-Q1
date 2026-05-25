@@ -1,7 +1,10 @@
 package com.logicq1.crm.modules.user.repository;
 
 import com.logicq1.crm.modules.user.entity.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -10,5 +13,10 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User,String> {
 
     Optional<User> findByEmail(String email);
+
+    @Modifying
+    @Transactional
+    @Query("update User u set u.password = ?2 where u.email = ?1")
+    void updatePassword(String email, String password);
 
 }
