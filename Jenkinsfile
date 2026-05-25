@@ -47,6 +47,7 @@ pipeline {
 
         stage('Build & Test') {
             steps {
+
                 sh """
                 mvn clean verify \
                 -Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
