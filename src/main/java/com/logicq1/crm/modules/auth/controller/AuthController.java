@@ -30,6 +30,8 @@ public class AuthController {
     public String home() {
         return "CRM Backend Running";
     }
+
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
 
