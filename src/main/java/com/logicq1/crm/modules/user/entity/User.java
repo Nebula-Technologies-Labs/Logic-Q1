@@ -1,8 +1,8 @@
 package com.logicq1.crm.modules.user.entity;
 
+import com.logicq1.crm.modules.auth.entity.ForgotPassword;
 import jakarta.persistence.*;
 import lombok.*;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -58,4 +58,7 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @OneToOne(mappedBy = "user")
+    private ForgotPassword forgotPassword;
 }
