@@ -21,7 +21,6 @@ public class OrganizationService {
     public OrganizationDto createOrganization(CreateOrganizationDto organizationDto, User user) {
         Organization organization = organizationMapper.toOrganization(organizationDto);
         organization.setAdminId(user);
-
         return organizationMapper.toOrganizationDto(organizationRepository.save(organization));
     }
 
