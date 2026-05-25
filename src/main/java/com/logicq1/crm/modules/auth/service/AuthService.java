@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -35,7 +36,7 @@ public class AuthService {
         User user = userMapper.toUser(data);
         user.setPassword(passwordEncoder.encode(data.getPassword()));
         user.setOnBoarded(false);
-        user.setAuthBy(AuthProvider.GOOGLE);
+        user.setAuthBy(AuthProvider.LOCAL);
         user.setRole(UserRole.MEMBER);
         userRepository.save(user);
     }
