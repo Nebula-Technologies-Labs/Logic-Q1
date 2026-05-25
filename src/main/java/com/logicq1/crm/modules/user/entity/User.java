@@ -1,12 +1,14 @@
 package com.logicq1.crm.modules.user.entity;
 
+import com.logicq1.crm.modules.auth.enums.AuthProvider;
+import com.logicq1.crm.modules.auth.enums.UserRole;
 import com.logicq1.crm.modules.organization.entity.Organization;
 import jakarta.persistence.*;
 import lombok.*;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,6 +31,26 @@ public class User implements UserDetails {
     private String email;
 
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    @Column(nullable = false)
+    private Boolean onBoarded;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider authBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
+    private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -60,7 +82,5 @@ public class User implements UserDetails {
         return true;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id" , nullable = false)
-    private Organization organization;
+
 }
