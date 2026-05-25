@@ -1,5 +1,6 @@
 package com.logicq1.crm.modules.user.entity;
 
+import com.logicq1.crm.modules.organization.entity.Organization;
 import jakarta.persistence.*;
 import lombok.*;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -58,4 +59,8 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id" , nullable = false)
+    private Organization organization;
 }
