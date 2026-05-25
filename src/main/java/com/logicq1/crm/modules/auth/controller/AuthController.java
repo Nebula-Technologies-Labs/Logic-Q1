@@ -1,5 +1,7 @@
 package com.logicq1.crm.modules.auth.controller;
 
+import com.logicq1.crm.modules.auth.enums.AuthProvider;
+import com.logicq1.crm.modules.auth.enums.UserRole;
 import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.modules.user.repository.UserRepository;
 import com.logicq1.crm.modules.auth.service.AuthService;
@@ -15,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,10 +38,17 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
+        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+            return new ResponseEntity<>("email already exists",HttpStatus.BAD_REQUEST);
+        }
 
         user.setPassword(
                 passwordEncoder.encode(user.getPassword())
         );
+        user.setCreatedAt(LocalDateTime.now());
+        user.setRole(UserRole.MEMBER);
+        user.setAuthBy(AuthProvider.LOCAL);
+        user.setOnBoarded(false);
 
         userRepository.save(user);
 
