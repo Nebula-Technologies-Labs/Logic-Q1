@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.auth.service;
+package com.logicq1.crm.services.email;
 
 import com.logicq1.crm.modules.auth.dto.MailBody;
 import org.springframework.beans.factory.annotation.Value;

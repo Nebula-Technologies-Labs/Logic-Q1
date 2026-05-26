@@ -7,6 +7,7 @@ import com.logicq1.crm.modules.auth.utils.ChangePassword;
 import com.logicq1.crm.modules.auth.utils.OTPGenerator;
 import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.modules.user.repository.UserRepository;
+import com.logicq1.crm.services.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
