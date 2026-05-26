@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.auth.entity;
+package com.logicq1.crm.modules.forgotPassword.entity;
 
 import com.logicq1.crm.modules.user.entity.User;
 import jakarta.persistence.*;
@@ -13,7 +13,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Builder
-public class password_reset_tokens {
+@Setter
+public class PasswordResetTokens {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
