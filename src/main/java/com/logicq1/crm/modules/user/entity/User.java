@@ -5,8 +5,10 @@ import com.logicq1.crm.modules.auth.enums.UserRole;
 import com.logicq1.crm.modules.organization.entity.Organization;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.logicq1.crm.modules.auth.entity.password_reset_tokens;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -45,6 +47,8 @@ public class User implements UserDetails {
     @JoinColumn(name = "created_by")
     private User createdBy;
 
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -82,5 +86,7 @@ public class User implements UserDetails {
         return true;
     }
 
+    @OneToOne(mappedBy = "user")
+    private password_reset_tokens passwordResetToken;
 
 }
