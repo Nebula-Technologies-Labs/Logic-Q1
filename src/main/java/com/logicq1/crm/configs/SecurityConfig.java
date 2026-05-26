@@ -34,15 +34,15 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/register" , "/auth/login").permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(basic -> basic.disable())
-                .formLogin(form -> form.disable())
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .oauth2Login(oAuth -> oAuth.successHandler(googleOAuthSuccessHandler))
+//                .oauth2Login(oAuth -> oAuth.successHandler(googleOAuthSuccessHandler))
                 .addFilterBefore(jwtFilter,
                         UsernamePasswordAuthenticationFilter.class);
 
