@@ -1,10 +1,10 @@
 package com.logicq1.crm.modules.user.entity;
 
-import com.logicq1.crm.modules.auth.entity.ForgotPassword;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.logicq1.crm.modules.auth.entity.password_reset_tokens;
 
 import java.util.Collection;
 import java.util.List;
@@ -60,5 +60,5 @@ public class User implements UserDetails {
     }
 
     @OneToOne(mappedBy = "user")
-    private ForgotPassword forgotPassword;
+    private password_reset_tokens passwordResetToken;
 }

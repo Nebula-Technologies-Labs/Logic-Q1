@@ -2,31 +2,36 @@ package com.logicq1.crm.modules.auth.entity;
 
 import com.logicq1.crm.modules.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
-public class ForgotPassword {
+public class password_reset_tokens {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private Integer id;
-
-    @Column(nullable = false)
-    private Integer otp;
-
-    @Column(nullable = false)
-    private Date expirationTime;
+    private UUID id;
 
     @OneToOne
     private User user;
+
+    private Integer token;
+
+    @Column(nullable = false)
+    private Date expire_at;
+
+    @Column(nullable = false)
+    private Instant created_at;
+
+    @Setter
+    private boolean verified = false;
+
 
 }

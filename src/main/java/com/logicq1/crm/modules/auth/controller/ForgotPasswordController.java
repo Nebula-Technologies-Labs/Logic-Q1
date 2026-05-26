@@ -1,8 +1,8 @@
 package com.logicq1.crm.modules.auth.controller;
 
 import com.logicq1.crm.modules.auth.dto.MailBody;
-import com.logicq1.crm.modules.auth.entity.ForgotPassword;
-import com.logicq1.crm.modules.auth.repositories.ForgotPasswordRepository;
+import com.logicq1.crm.modules.auth.entity.password_reset_tokens;
+import com.logicq1.crm.modules.auth.repositories.PasswordResetTokenRepository;
 import com.logicq1.crm.modules.auth.service.EmailService;
 import com.logicq1.crm.modules.auth.utils.ChangePassword;
 import com.logicq1.crm.modules.auth.utils.OTPGenerator;
@@ -26,14 +26,14 @@ public class ForgotPasswordController {
 
     private final EmailService emailService;
 
-    private final ForgotPasswordRepository forgotPasswordRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public ForgotPasswordController(UserRepository userRepository, EmailService emailService, ForgotPasswordRepository forgotPasswordRepository, BCryptPasswordEncoder passwordEncoder) {
+    public ForgotPasswordController(UserRepository userRepository, EmailService emailService ,PasswordResetTokenRepository passwordResetTokenRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.emailService = emailService;
-        this.forgotPasswordRepository = forgotPasswordRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -44,6 +44,8 @@ public class ForgotPasswordController {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new UsernameNotFoundException("Please Provide Valid Email"));
 
+        passwordResetTokenRepository.deleteByUser(user);
+
         Integer otp = OTPGenerator.otpGenerator();
 
         MailBody mailBody = MailBody.builder()
@@ -51,18 +53,19 @@ public class ForgotPasswordController {
                 .text("This is your OTP for Forgot Password request : " + otp)
                 .subject("OTP for Forget Password request")
                 .build();
-        ForgotPassword forgotPassword = ForgotPassword.builder()
-                .otp(otp)
+
+        password_reset_tokens prt = password_reset_tokens.builder()
+                .token(otp)
                 .user(user)
-                .expirationTime(new Date(System.currentTimeMillis() + 5 * 60 * 1000)) // OTP valid for 5 minutes
+                .expire_at(new Date(System.currentTimeMillis() + 5 * 60 * 1000))
+                .created_at(Instant.now())
                 .build();
 
         emailService.sendSimpleMessage(mailBody);
 
-        forgotPasswordRepository.save(forgotPassword);
+        passwordResetTokenRepository.save(prt);
 
         return ResponseEntity.ok("OTP sent to your email. Please check your inbox and use the OTP to reset your password. OTP is valid for 5 minutes.");
-
 
     }
 
@@ -72,17 +75,19 @@ public class ForgotPasswordController {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new UsernameNotFoundException("Please Provide Valid Email"));
 
-        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp,user)
+
+        password_reset_tokens prt = passwordResetTokenRepository.findByOtpAndUser(otp,user)
                 .orElseThrow(()-> new RuntimeException("Invalid OTP or OTP has expired. Please try again."));
 
-        if(fp.getExpirationTime().before(Date.from(Instant.now()))){
-            forgotPasswordRepository.delete(fp);
+        if(prt.getExpire_at().before(Date.from(Instant.now()))){
+            passwordResetTokenRepository.delete(prt);
             return ResponseEntity.badRequest().body("OTP has expired. Please request a new OTP.");
         }
 
+        prt.setVerified(true);
+        passwordResetTokenRepository.save(prt);
+
         return ResponseEntity.ok("OTP verified successfully. You can now reset your password.");
-
-
     }
 
     @PostMapping("/changePassword/{email}")
@@ -93,12 +98,28 @@ public class ForgotPasswordController {
             return new ResponseEntity<>("Please enter the password again", HttpStatus.EXPECTATION_FAILED);
         }
 
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        password_reset_tokens prt = passwordResetTokenRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("OTP verification required before password reset"));
+
+        if(!prt.isVerified()){
+            return new ResponseEntity<>("Please verify OTP first", HttpStatus.UNAUTHORIZED);
+        }
+
+        if(prt.getExpire_at().before(Date.from(Instant.now()))){
+            passwordResetTokenRepository.delete(prt);
+            return new ResponseEntity<>("OTP expired. Please request a new OTP", HttpStatus.UNAUTHORIZED);
+        }
+
         String encodedPassword = passwordEncoder.encode(changePassword.password());
 
-        userRepository.updatePassword(email,encodedPassword);
+        userRepository.updatePassword(email, encodedPassword);
+
+        passwordResetTokenRepository.delete(prt);
 
         return ResponseEntity.ok("Password changed successfully");
-
 
 
     }
