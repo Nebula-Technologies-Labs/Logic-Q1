@@ -13,7 +13,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Builder
-public class password_reset_tokens {
+@Setter
+public class PasswordResetTokens {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
