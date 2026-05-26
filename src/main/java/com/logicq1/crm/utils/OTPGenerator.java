@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.auth.utils;
+package com.logicq1.crm.utils;
 
 import java.util.Random;
 

@@ -8,7 +8,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.logicq1.crm.modules.auth.entity.password_reset_tokens;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -87,7 +86,5 @@ public class User implements UserDetails {
         return true;
     }
 
-    @OneToOne(mappedBy = "user")
-    private password_reset_tokens passwordResetToken;
 
 }

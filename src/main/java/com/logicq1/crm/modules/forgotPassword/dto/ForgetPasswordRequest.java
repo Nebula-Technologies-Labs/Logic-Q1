@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.auth.dto;
+package com.logicq1.crm.modules.forgotPassword.dto;
 
 import lombok.Data;
 
