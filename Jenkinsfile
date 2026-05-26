@@ -52,6 +52,28 @@ pipeline {
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
+
+        stage('Deploy To Production') {
+
+            when {
+                branch 'master'
+            }
+
+            steps {
+
+                echo 'Deploying MASTER branch...'
+
+                sh '''
+                cp target/*.jar /opt/crm/crm.jar
+
+                cd /opt/crm
+
+                docker compose down
+
+                docker compose up --build -d
+                '''
+            }
+        }
     }
 
     post {

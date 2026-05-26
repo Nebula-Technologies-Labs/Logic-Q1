@@ -25,11 +25,6 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private JwtUtil jwtService;
 
-    @GetMapping("/")
-    public String home() {
-        return "CRM Backend Running";
-    }
-
 
     @PostMapping("/register")
     private ResponseEntity<Map<String, Object>> register(@RequestBody RegisterRequest data) {

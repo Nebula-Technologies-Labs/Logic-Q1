@@ -1,5 +1,6 @@
 package com.logicq1.crm.modules.email.service;
 
+
 import com.logicq1.crm.modules.email.dto.MailBody;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;

@@ -2,13 +2,13 @@ package com.logicq1.crm.modules.user.entity;
 
 import com.logicq1.crm.modules.auth.enums.AuthProvider;
 import com.logicq1.crm.modules.auth.enums.UserRole;
+import com.logicq1.crm.modules.contacts.entity.Contact;
 import com.logicq1.crm.modules.organization.entity.Organization;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.logicq1.crm.modules.forgotPassword.entity.password_reset_tokens;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -56,6 +56,9 @@ public class User implements UserDetails {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<Contact> contacts;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -87,7 +90,5 @@ public class User implements UserDetails {
         return true;
     }
 
-    @OneToOne(mappedBy = "user")
-    private password_reset_tokens passwordResetToken;
 
 }

@@ -1,4 +1,4 @@
-package com.logicq1.crm.exceptions;
+package com.logicq1.crm.modules.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
