@@ -16,13 +16,6 @@ pipeline {
     environment {
         APP_NAME = 'crm'
         SPRING_PROFILES_ACTIVE = 'test'
-
-        DB_HOST = '168.220.248.162'
-        DB_PORT = '5432'
-        DB_NAME = 'logicdb'
-
-        DB_CREDS = credentials('postgres-creds')
-
         MAVEN_OPTS = '-Xmx1024m -Dmaven.repo.local=.m2/repository'
     }
 
@@ -45,21 +38,12 @@ pipeline {
             }
         }
 
-        stage('Build & Test') {
+        stage('Build, Test & Package') {
             steps {
-
-                sh """
-                mvn clean verify \
-                -Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
-                -Dspring.datasource.username=${DB_CREDS_USR} \
-                -Dspring.datasource.password=${DB_CREDS_PSW}
-                """
-            }
-        }
-
-        stage('Package') {
-            steps {
-                sh 'mvn package -DskipTests'
+                sh '''
+                mvn clean package \
+                -Dspring.profiles.active=test
+                '''
             }
         }
 
