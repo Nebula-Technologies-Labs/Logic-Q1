@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.security.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "organization")
@@ -21,7 +22,7 @@ public class Organization {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     private String name;
 
