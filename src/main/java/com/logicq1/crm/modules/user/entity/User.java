@@ -8,7 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.logicq1.crm.modules.auth.entity.password_reset_tokens;
+import com.logicq1.crm.modules.forgotPassword.entity.password_reset_tokens;
 
 import java.time.LocalDateTime;
 import java.util.Collection;

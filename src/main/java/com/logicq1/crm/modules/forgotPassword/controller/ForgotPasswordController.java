@@ -1,7 +1,7 @@
-package com.logicq1.crm.modules.auth.controller;
+package com.logicq1.crm.modules.forgotPassword.controller;
 
-import com.logicq1.crm.modules.auth.service.ForgotPasswordService;
-import com.logicq1.crm.modules.auth.utils.ChangePassword;
+import com.logicq1.crm.modules.forgotPassword.service.ForgotPasswordService;
+import com.logicq1.crm.modules.forgotPassword.utils.ChangePassword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

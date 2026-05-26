@@ -1,10 +1,11 @@
-package com.logicq1.crm.modules.auth.service;
+package com.logicq1.crm.modules.forgotPassword.service;
 
-import com.logicq1.crm.modules.auth.dto.MailBody;
-import com.logicq1.crm.modules.auth.entity.password_reset_tokens;
-import com.logicq1.crm.modules.auth.repositories.PasswordResetTokenRepository;
-import com.logicq1.crm.modules.auth.utils.ChangePassword;
-import com.logicq1.crm.modules.auth.utils.OTPGenerator;
+import com.logicq1.crm.modules.email.dto.MailBody;
+import com.logicq1.crm.modules.forgotPassword.entity.password_reset_tokens;
+import com.logicq1.crm.modules.forgotPassword.repositories.PasswordResetTokenRepository;
+import com.logicq1.crm.modules.forgotPassword.utils.ChangePassword;
+import com.logicq1.crm.utils.OTPGenerator;
+import com.logicq1.crm.modules.email.service.EmailService;
 import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
-package com.logicq1.crm.modules.auth.repositories;
+package com.logicq1.crm.modules.forgotPassword.repositories;
 
-import com.logicq1.crm.modules.auth.entity.password_reset_tokens;
+import com.logicq1.crm.modules.forgotPassword.entity.password_reset_tokens;
 import com.logicq1.crm.modules.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.auth.entity;
+package com.logicq1.crm.modules.forgotPassword.entity;
 
 import com.logicq1.crm.modules.user.entity.User;
 import jakarta.persistence.*;
