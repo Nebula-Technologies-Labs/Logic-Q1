@@ -1,11 +1,16 @@
 package com.logicq1.crm.modules.user.entity;
 
+import com.logicq1.crm.modules.auth.enums.AuthProvider;
+import com.logicq1.crm.modules.auth.enums.UserRole;
+import com.logicq1.crm.modules.organization.entity.Organization;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.logicq1.crm.modules.auth.entity.password_reset_tokens;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,6 +33,28 @@ public class User implements UserDetails {
     private String email;
 
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    @Column(nullable = false)
+    private Boolean onBoarded;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider authBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -61,4 +88,5 @@ public class User implements UserDetails {
 
     @OneToOne(mappedBy = "user")
     private password_reset_tokens passwordResetToken;
+
 }
