@@ -2,6 +2,7 @@ package com.logicq1.crm.modules.user.entity;
 
 import com.logicq1.crm.modules.auth.enums.AuthProvider;
 import com.logicq1.crm.modules.auth.enums.UserRole;
+import com.logicq1.crm.modules.contacts.entity.Contact;
 import com.logicq1.crm.modules.organization.entity.Organization;
 import jakarta.persistence.*;
 import lombok.*;
@@ -54,6 +55,9 @@ public class User implements UserDetails {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
     private Organization organization;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<Contact> contacts;
 
 
     @Override

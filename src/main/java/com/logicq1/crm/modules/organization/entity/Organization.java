@@ -1,5 +1,6 @@
 package com.logicq1.crm.modules.organization.entity;
 
+import com.logicq1.crm.modules.contacts.entity.Contact;
 import com.logicq1.crm.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,6 +35,9 @@ public class Organization {
 
     @OneToMany(mappedBy = "organization" , cascade = CascadeType.ALL)
     private List<User> members;
+
+    @OneToMany(mappedBy = "organization" , cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Contact> contacts;
 
     private String mobileNumber;
 

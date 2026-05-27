@@ -1,5 +1,6 @@
 package com.logicq1.crm.modules.auth.controller;
 
+import com.logicq1.crm.modules.auth.dto.RegisterInviteRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterRequest;
 import com.logicq1.crm.modules.auth.service.AuthService;
 import com.logicq1.crm.modules.user.entity.User;
@@ -24,11 +25,6 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private JwtUtil jwtService;
 
-    @GetMapping("/")
-    public String home() {
-        return "CRM Backend Running";
-    }
-
 
     @PostMapping("/register")
     private ResponseEntity<Map<String, Object>> register(@RequestBody RegisterRequest data) {
@@ -46,6 +42,17 @@ public class AuthController {
         if(authentication.isAuthenticated())
             return new ResponseEntity<>(jwtService.generateToken(user.getUsername()),HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("/register-invite")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String registerInvite(
+            @RequestBody RegisterInviteRequest request
+    ) {
+
+        authService.registerInvite(request);
+
+        return "User registered successfully";
     }
 
 }
