@@ -1,0 +1,36 @@
+package com.logicq1.crm.modules.auth.enums;
+public enum PermissionType {
+
+    // USER MANAGEMENT
+    USERS_CREATE,
+    USERS_READ,
+    USERS_UPDATE,
+    USERS_DELETE,
+
+    // ROLE MANAGEMENT
+    ROLES_CREATE,
+    ROLES_READ,
+    ROLES_UPDATE,
+    ROLES_DELETE,
+
+    // PERMISSION MANAGEMENT
+    PERMISSIONS_ASSIGN,
+
+    // ORGANIZATION
+    ORGANIZATION_READ,
+    ORGANIZATION_UPDATE,
+    ORGANIZATION_DELETE,
+
+    // TAGS
+    TAGS_CREATE,
+    TAGS_READ,
+    TAGS_UPDATE,
+    TAGS_DELETE,
+
+    // AUDIT LOGS
+    AUDIT_LOGS_READ,
+
+    // INVITATIONS
+    INVITES_SEND,
+    INVITES_REVOKE
+}
