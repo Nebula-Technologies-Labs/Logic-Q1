@@ -6,13 +6,13 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user_roles")
+@Table(name = "user_role")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserRoles {
+public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -20,6 +20,6 @@ public class UserRoles {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
 }
