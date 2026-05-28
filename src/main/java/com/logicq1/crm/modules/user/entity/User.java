@@ -1,12 +1,13 @@
 package com.logicq1.crm.modules.user.entity;
 
 import com.logicq1.crm.modules.auth.enums.AuthProvider;
-import com.logicq1.crm.modules.auth.enums.UserRole;
 import com.logicq1.crm.modules.contacts.entity.Contact;
 import com.logicq1.crm.modules.organization.entity.Organization;
+import com.logicq1.crm.modules.organization.entity.Roles;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,30 +17,56 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(
+        name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "email", name = "uk_users_email")
+        },
+        indexes = {
+                @Index(name = "idx_users_organization_id", columnList = "organization_id"),
+                @Index(name = "idx_users_is_active", columnList = "is_active"),
+                @Index(name = "idx_users_email", columnList = "email")
+        }
+)
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String name;
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 
     @Column(unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private String phoneNumber;
+
+    private String profileImage;
+
+    private String jobTitle;
+
+    private String department;
 
     @Column(nullable = false)
     private Boolean onBoarded;
+
+    @Column(nullable = false)
+    private Boolean isActive;
+
+    @Column(nullable = false)
+    private Boolean emailVerified;
 
     @Enumerated(EnumType.STRING)
     private AuthProvider authBy;
@@ -48,9 +75,14 @@ public class User implements UserDetails {
     @JoinColumn(name = "created_by")
     private User createdBy;
 
+    private LocalDateTime lastLoginAt;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
@@ -58,6 +90,10 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Contact> contacts;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Roles role;
 
 
     @Override

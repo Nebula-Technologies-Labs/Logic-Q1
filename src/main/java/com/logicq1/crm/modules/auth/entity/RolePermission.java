@@ -6,20 +6,26 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name = "permissions")
+@Table(name = "role_permissions")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class RolePermission {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
     @ManyToOne
+    @JoinColumn(name = "role_id")
     private Roles role;
 
-    @OneToMany
-    private List<Permissions> permissions;
-
+    @ManyToOne
+    @JoinColumn(name = "permission_id")
+    private Permissions permission;
 }

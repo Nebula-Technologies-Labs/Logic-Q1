@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.auth.enums;
+package com.logicq1.crm.modules.organization.enums;
 
 public enum UserRole {
     SUPER_ADMIN,
