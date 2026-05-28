@@ -1,6 +1,6 @@
 package com.logicq1.crm.modules.organization.dto;
 
-import com.logicq1.crm.modules.auth.enums.UserRole;
+import com.logicq1.crm.modules.organization.enums.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 
