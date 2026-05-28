@@ -1,0 +1,13 @@
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=logicdb
+DB_USERNAME=postgres
+DB_PASSWORD=your_local_password
+
+JWT_SECRET=TaK+HaV^uvCHEFsEVfypW7g9^k*Z8$VNFVIUSDNBVVEEFV
+
+GOOGLE_CLIENT_ID=73132647576-1acr816e2986tae28a7m5pv27jhcdn55.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+
+EMAIL_USERNAME=buissness.nebulatechnologies@gmail.com
+EMAIL_PASSWORD=ddhgzytygceiexwe

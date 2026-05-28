@@ -33,6 +33,6 @@ public class Roles {
 
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "roles")
+    @OneToMany(mappedBy = "role")
     private List<User> users;
 }

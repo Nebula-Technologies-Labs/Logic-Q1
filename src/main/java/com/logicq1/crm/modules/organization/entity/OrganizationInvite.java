@@ -1,6 +1,5 @@
 package com.logicq1.crm.modules.organization.entity;
 
-import com.logicq1.crm.modules.organization.enums.UserRole;
 import com.logicq1.crm.modules.organization.enums.InviteStatus;
 import com.logicq1.crm.modules.user.entity.User;
 import jakarta.persistence.*;
@@ -28,9 +27,9 @@ public class OrganizationInvite {
     @Column(nullable = false)
     private String email;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Roles role;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)

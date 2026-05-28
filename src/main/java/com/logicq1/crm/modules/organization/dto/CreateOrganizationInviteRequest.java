@@ -1,14 +1,13 @@
 package com.logicq1.crm.modules.organization.dto;
 
-import com.logicq1.crm.modules.organization.enums.UserRole;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+import java.util.UUID;
+
+@Data
 public class CreateOrganizationInviteRequest {
 
     private String email;
 
-    private UserRole role;
+    private UUID roleId;
 }
