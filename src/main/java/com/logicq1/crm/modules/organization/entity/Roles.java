@@ -1,7 +1,7 @@
 package com.logicq1.crm.modules.organization.entity;
 
-import com.logicq1.crm.modules.organization.enums.UserRole;
 import com.logicq1.crm.modules.user.entity.User;
+import com.logicq1.crm.modules.auth.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +27,7 @@ public class Roles {
 
     @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
-    private UserRole name;
+    private UserRole role;
 
     private String description;
 

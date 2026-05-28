@@ -8,7 +8,7 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Table(name = "permissions")
+@Table(name = "role_permissions")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,7 +19,7 @@ public class RolePermission {
     @ManyToOne
     private Roles role;
 
-    @OneToMany
+    @OneToMany(mappedBy = "role")
     private List<Permissions> permissions;
 
 }
