@@ -1,5 +1,6 @@
 package com.logicq1.crm.modules.auth.service;
 
+import com.logicq1.crm.modules.auth.dto.LoginRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterInviteRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterRequest;
 import com.logicq1.crm.modules.auth.enums.AuthProvider;
@@ -12,8 +13,12 @@ import com.logicq1.crm.modules.organization.repository.RolesRepository;
 import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.modules.user.mapper.UserMapper;
 import com.logicq1.crm.modules.user.repository.UserRepository;
+import com.logicq1.crm.services.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +36,9 @@ public class AuthService {
     private final UserMapper userMapper;
     private final OrganizationInviteRepository organizationInviteRepository;
     private final RolesRepository rolesRepository;
+    private final AuthenticationManager authManager;
+    private JwtUtil jwtService;
+
 
     public void registerUser(RegisterRequest data) throws RuntimeException {
 
@@ -127,6 +135,23 @@ public class AuthService {
         invite.setStatus(InviteStatus.ACCEPTED);
 
         organizationInviteRepository.save(invite);
+    }
+    public String login(LoginRequest request) {
+
+
+        authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        userRepository.updateLastLogin(
+                request.getEmail(),
+                LocalDateTime.now()
+        );
+
+        return jwtService.generateToken(request.getEmail());
     }
 
 }
