@@ -11,6 +11,6 @@ CREATE INDEX idx_roles_organization_id ON roles (organization_id);
 -- Default system roles
 INSERT INTO roles (id, role, description, created_at)
 VALUES
-    (gen_random_uuid(), 0, 'SUPER_ADMIN', CURRENT_TIMESTAMP),
-    (gen_random_uuid(), 1, 'ORG_ADMIN', CURRENT_TIMESTAMP),
-    (gen_random_uuid(), 2, 'MEMBER', CURRENT_TIMESTAMP);
+    ('11111111-1111-1111-1111-111111111111', 0, 'SUPER_ADMIN', CURRENT_TIMESTAMP),
+    ('22222222-2222-2222-2222-222222222222', 1, 'ORG_ADMIN', CURRENT_TIMESTAMP),
+    ('33333333-3333-3333-3333-333333333333', 2, 'MEMBER', CURRENT_TIMESTAMP);
