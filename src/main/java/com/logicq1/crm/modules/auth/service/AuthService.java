@@ -62,6 +62,7 @@ public class AuthService {
 
         userRepository.save(user);
     }
+
     @Transactional
     public void registerInvite(
             RegisterInviteRequest request

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -35,13 +36,26 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+
     @PostMapping("/login")
-    private  ResponseEntity<String> login(@RequestBody User user){
-        Authentication authentication=
-                authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
-        if(authentication.isAuthenticated())
-            return new ResponseEntity<>(jwtService.generateToken(user.getUsername()),HttpStatus.OK);
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> login(@RequestBody User user) {
+
+        try {
+            Authentication authentication =
+                    authManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    user.getUsername(),
+                                    user.getPassword()
+                            ));
+
+            return ResponseEntity.ok(
+                    jwtService.generateToken(user.getUsername())
+            );
+
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid credentials");
+        }
     }
 
     @PostMapping("/register-invite")
