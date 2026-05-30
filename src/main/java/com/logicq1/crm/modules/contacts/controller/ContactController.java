@@ -8,8 +8,10 @@ import com.logicq1.crm.modules.user.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +60,16 @@ public class ContactController {
         response.put("contact" , contact);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<String> importContacts(
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication
+    ) {
+        contactService.importContacts(file, authentication.getName());
+
+        return ResponseEntity.ok("Contacts imported successfully");
     }
 
 }
