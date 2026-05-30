@@ -1,13 +1,15 @@
 package com.logicq1.crm.modules.organization.dto;
 
-import com.logicq1.crm.modules.auth.enums.UserRole;
+import com.logicq1.crm.modules.organization.entity.Roles;
 import com.logicq1.crm.modules.organization.enums.InviteStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class ValidateOrganizationInviteResponse {
 
     private String organizationName;
 
-    private UserRole role;
+    private String role;
 
     private InviteStatus status;
 

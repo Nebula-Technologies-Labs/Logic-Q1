@@ -1,30 +1,20 @@
 package com.logicq1.crm.modules.organization.dto;
 
-import com.logicq1.crm.modules.auth.enums.UserRole;
+import com.logicq1.crm.modules.organization.entity.Roles;
 import com.logicq1.crm.modules.organization.enums.InviteStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrganizationInviteResponse {
 
-    private UUID id;
-
-    private String email;
-
-    private UserRole role;
-
-    private InviteStatus status;
-
-    private UUID organizationId;
-
     private String token;
-
-    private LocalDateTime expiresAt;
 }

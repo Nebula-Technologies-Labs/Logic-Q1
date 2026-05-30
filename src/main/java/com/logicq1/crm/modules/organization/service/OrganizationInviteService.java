@@ -6,8 +6,10 @@ import com.logicq1.crm.modules.organization.dto.CreateOrganizationInviteRequest;
 import com.logicq1.crm.modules.organization.dto.OrganizationInviteResponse;
 import com.logicq1.crm.modules.organization.dto.ValidateOrganizationInviteResponse;
 import com.logicq1.crm.modules.organization.entity.OrganizationInvite;
+import com.logicq1.crm.modules.organization.entity.Roles;
 import com.logicq1.crm.modules.organization.enums.InviteStatus;
 import com.logicq1.crm.modules.organization.repository.OrganizationInviteRepository;
+import com.logicq1.crm.modules.organization.repository.RolesRepository;
 import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +24,10 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class OrganizationInviteService {
+
     private final OrganizationInviteRepository organizationInviteRepository;
     private final UserRepository userRepository;
+    private final RolesRepository rolesRepository;
     private final EmailService emailService;
 
     public OrganizationInviteResponse createInvite(
@@ -57,12 +61,21 @@ public class OrganizationInviteService {
             );
         }
 
+        Roles role = rolesRepository
+                .findById(request.getRoleId())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Role not found"
+                        )
+                );
+
         String token = UUID.randomUUID().toString();
 
         OrganizationInvite invite = OrganizationInvite.builder()
                 .token(token)
                 .email(request.getEmail())
-                .role(request.getRole())
+                .role(role)
                 .organization(admin.getOrganization())
                 .invitedBy(admin)
                 .status(InviteStatus.PENDING)
@@ -89,13 +102,7 @@ public class OrganizationInviteService {
         emailService.sendSimpleMessage(mailBody);
 
         return OrganizationInviteResponse.builder()
-                .id(savedInvite.getId())
-                .email(savedInvite.getEmail())
-                .role(savedInvite.getRole())
-                .status(savedInvite.getStatus())
-                .organizationId(savedInvite.getOrganization().getId())
                 .token(savedInvite.getToken())
-                .expiresAt(savedInvite.getExpiresAt())
                 .build();
     }
 
@@ -135,11 +142,9 @@ public class OrganizationInviteService {
         return ValidateOrganizationInviteResponse.builder()
                 .email(invite.getEmail())
                 .organizationName(invite.getOrganization().getName())
-                .role(invite.getRole())
+                .role(invite.getRole().getRole().name())
                 .status(invite.getStatus())
                 .expiresAt(invite.getExpiresAt())
                 .build();
     }
-
-
 }

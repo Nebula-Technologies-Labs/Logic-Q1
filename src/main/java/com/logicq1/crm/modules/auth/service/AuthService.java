@@ -1,20 +1,24 @@
 package com.logicq1.crm.modules.auth.service;
 
+import com.logicq1.crm.modules.auth.dto.LoginRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterInviteRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterRequest;
 import com.logicq1.crm.modules.auth.enums.AuthProvider;
-import com.logicq1.crm.modules.auth.enums.UserRole;
+import com.logicq1.crm.modules.organization.entity.Roles;
+import com.logicq1.crm.modules.organization.enums.UserRole;
 import com.logicq1.crm.modules.organization.entity.OrganizationInvite;
 import com.logicq1.crm.modules.organization.enums.InviteStatus;
 import com.logicq1.crm.modules.organization.repository.OrganizationInviteRepository;
-import com.logicq1.crm.modules.user.dto.UserDto;
+import com.logicq1.crm.modules.organization.repository.RolesRepository;
 import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.modules.user.mapper.UserMapper;
 import com.logicq1.crm.modules.user.repository.UserRepository;
+import com.logicq1.crm.services.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,21 +35,42 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final OrganizationInviteRepository organizationInviteRepository;
+    private final RolesRepository rolesRepository;
+    private final AuthenticationManager authManager;
+    private JwtUtil jwtService;
 
-    public void registerUser(RegisterRequest data) throws RuntimeException{
+
+    public void registerUser(RegisterRequest data) throws RuntimeException {
+
         Optional<User> userExists = userRepository.findByEmail(data.getEmail());
 
         if(userExists.isPresent()){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Email already in use"
+            );
         }
 
+        Roles memberRole = rolesRepository
+                .findByRole(UserRole.MEMBER)
+                .orElseThrow(() ->
+                        new RuntimeException("Default MEMBER role not found")
+                );
+
         User user = userMapper.toUser(data);
+
         user.setPassword(passwordEncoder.encode(data.getPassword()));
         user.setOnBoarded(false);
         user.setAuthBy(AuthProvider.LOCAL);
-        user.setRole(UserRole.MEMBER);
+
+        user.setIsActive(true);
+        user.setEmailVerified(false);
+
+        user.setRole(memberRole);
+
         userRepository.save(user);
     }
+
     @Transactional
     public void registerInvite(
             RegisterInviteRequest request
@@ -93,12 +118,16 @@ public class AuthService {
 
         User user = User.builder()
                 .email(invite.getEmail())
-                .name(request.getName())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .organization(invite.getOrganization())
                 .role(invite.getRole())
                 .createdBy(invite.getInvitedBy())
                 .onBoarded(true)
+                .isActive(true)
+                .emailVerified(true)
+                .authBy(AuthProvider.LOCAL)
                 .build();
 
         userRepository.save(user);
@@ -106,6 +135,23 @@ public class AuthService {
         invite.setStatus(InviteStatus.ACCEPTED);
 
         organizationInviteRepository.save(invite);
+    }
+    public String login(LoginRequest request) {
+
+
+        authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        userRepository.updateLastLogin(
+                request.getEmail(),
+                LocalDateTime.now()
+        );
+
+        return jwtService.generateToken(request.getEmail());
     }
 
 }
