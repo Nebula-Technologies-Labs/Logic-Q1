@@ -1,0 +1,10 @@
+$kind: http-request
+name: Get All Organizations
+method: GET
+url: '{{baseUrl}}/organization/all'
+order: 3000
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{authToken}}'

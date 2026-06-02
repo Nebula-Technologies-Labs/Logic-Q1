@@ -1,0 +1,8 @@
+$kind: http-request
+name: Verify Mail
+method: POST
+url: '{{baseUrl}}/forgotPassword/verifyMail/:email'
+order: 1000
+pathVariables:
+  - key: email
+    value: john.doe@example.com

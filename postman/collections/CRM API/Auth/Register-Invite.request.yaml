@@ -1,0 +1,17 @@
+$kind: http-request
+name: Register Invite
+method: POST
+url: '{{baseUrl}}/auth/register-invite'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "token": "{{inviteToken}}",
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "password": "password123"
+    }
