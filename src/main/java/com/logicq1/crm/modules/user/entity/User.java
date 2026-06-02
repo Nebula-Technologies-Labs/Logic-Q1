@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -98,9 +99,18 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
 
+        return role.getRolePermissions()
+                .stream()
+                .map(rolePermission ->
+                        new SimpleGrantedAuthority(
+                                rolePermission
+                                        .getPermission()
+                                        .getName()
+                        )
+                )
+                .toList();
+    }
     @Override
     public String getUsername() {
         return email;
