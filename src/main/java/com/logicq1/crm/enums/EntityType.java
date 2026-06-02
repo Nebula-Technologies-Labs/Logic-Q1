@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.common.enums;
+package com.logicq1.crm.enums;
 
 public enum EntityType {
     USER,

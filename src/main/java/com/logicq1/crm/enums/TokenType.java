@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.forgotPassword.enums;
+package com.logicq1.crm.enums;
 
 public enum TokenType {
     EMAIL_VERIFICATION,

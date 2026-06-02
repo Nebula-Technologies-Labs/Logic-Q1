@@ -1,7 +1,6 @@
 package com.logicq1.crm.modules.organization.dto;
 
-import com.logicq1.crm.modules.organization.entity.Roles;
-import com.logicq1.crm.modules.organization.enums.InviteStatus;
+import com.logicq1.crm.enums.InviteStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

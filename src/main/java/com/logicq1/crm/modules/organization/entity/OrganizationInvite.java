@@ -1,6 +1,6 @@
 package com.logicq1.crm.modules.organization.entity;
 
-import com.logicq1.crm.modules.organization.enums.InviteStatus;
+import com.logicq1.crm.enums.InviteStatus;
 import com.logicq1.crm.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;

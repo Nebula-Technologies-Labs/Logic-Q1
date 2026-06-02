@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.user.enums;
+package com.logicq1.crm.enums;
 public enum Department {
     ENGINEERING,
     SALES,

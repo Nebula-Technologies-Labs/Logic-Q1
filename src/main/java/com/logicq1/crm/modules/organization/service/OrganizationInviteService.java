@@ -7,7 +7,7 @@ import com.logicq1.crm.modules.organization.dto.OrganizationInviteResponse;
 import com.logicq1.crm.modules.organization.dto.ValidateOrganizationInviteResponse;
 import com.logicq1.crm.modules.organization.entity.OrganizationInvite;
 import com.logicq1.crm.modules.organization.entity.Roles;
-import com.logicq1.crm.modules.organization.enums.InviteStatus;
+import com.logicq1.crm.enums.InviteStatus;
 import com.logicq1.crm.modules.organization.repository.OrganizationInviteRepository;
 import com.logicq1.crm.modules.organization.repository.RolesRepository;
 import com.logicq1.crm.modules.user.entity.User;

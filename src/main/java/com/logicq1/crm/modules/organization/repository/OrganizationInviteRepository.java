@@ -2,7 +2,7 @@ package com.logicq1.crm.modules.organization.repository;
 
 import com.logicq1.crm.modules.organization.entity.Organization;
 import com.logicq1.crm.modules.organization.entity.OrganizationInvite;
-import com.logicq1.crm.modules.organization.enums.InviteStatus;
+import com.logicq1.crm.enums.InviteStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
