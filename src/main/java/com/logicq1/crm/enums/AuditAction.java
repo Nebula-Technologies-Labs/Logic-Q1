@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.audit.enums;
+package com.logicq1.crm.enums;
 
 public enum AuditAction {
     CREATE,

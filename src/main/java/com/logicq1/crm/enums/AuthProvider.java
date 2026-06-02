@@ -1,4 +1,4 @@
-package com.logicq1.crm.modules.auth.enums;
+package com.logicq1.crm.enums;
 
 public enum AuthProvider {
     LOCAL,

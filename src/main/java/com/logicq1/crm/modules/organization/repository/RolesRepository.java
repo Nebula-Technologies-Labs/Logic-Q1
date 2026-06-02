@@ -1,7 +1,7 @@
 package com.logicq1.crm.modules.organization.repository;
 
 import com.logicq1.crm.modules.organization.entity.Roles;
-import com.logicq1.crm.modules.organization.enums.UserRole;
+import com.logicq1.crm.enums.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

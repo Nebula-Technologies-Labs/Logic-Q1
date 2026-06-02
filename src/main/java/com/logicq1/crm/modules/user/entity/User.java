@@ -1,6 +1,6 @@
 package com.logicq1.crm.modules.user.entity;
 
-import com.logicq1.crm.modules.auth.enums.AuthProvider;
+import com.logicq1.crm.enums.AuthProvider;
 import com.logicq1.crm.modules.contacts.entity.Contact;
 import com.logicq1.crm.modules.organization.entity.Organization;
 import com.logicq1.crm.modules.organization.entity.Roles;
