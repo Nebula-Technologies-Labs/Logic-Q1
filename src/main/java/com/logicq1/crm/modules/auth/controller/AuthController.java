@@ -1,17 +1,14 @@
 package com.logicq1.crm.modules.auth.controller;
 
+import com.logicq1.crm.modules.auth.dto.LoginRequest;
+import com.logicq1.crm.modules.auth.dto.RegisterInviteRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterRequest;
 import com.logicq1.crm.modules.auth.service.AuthService;
-import com.logicq1.crm.modules.user.entity.User;
-import com.logicq1.crm.services.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,13 +18,6 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-    private final AuthenticationManager authManager;
-    private JwtUtil jwtService;
-
-    @GetMapping("/")
-    public String home() {
-        return "CRM Backend Running";
-    }
 
 
     @PostMapping("/register")
@@ -39,13 +29,30 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+
     @PostMapping("/login")
-    private  ResponseEntity<String> login(@RequestBody User user){
-        Authentication authentication=
-                authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
-        if(authentication.isAuthenticated())
-            return new ResponseEntity<>(jwtService.generateToken(user.getUsername()),HttpStatus.OK);
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> login(
+            @RequestBody LoginRequest request
+    ) {
+        try {
+            return ResponseEntity.ok(
+                    authService.login(request)
+            );
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid credentials");
+        }
+    }
+
+    @PostMapping("/register-invite")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String registerInvite(
+            @RequestBody RegisterInviteRequest request
+    ) {
+
+        authService.registerInvite(request);
+
+        return "User registered successfully";
     }
 
 }
