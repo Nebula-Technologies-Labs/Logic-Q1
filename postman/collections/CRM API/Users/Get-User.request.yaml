@@ -1,0 +1,13 @@
+$kind: http-request
+name: Get User
+method: GET
+url: '{{baseUrl}}/api/users/:id'
+order: 1000
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{authToken}}'
+pathVariables:
+  - key: id
+    value: '{{userId}}'

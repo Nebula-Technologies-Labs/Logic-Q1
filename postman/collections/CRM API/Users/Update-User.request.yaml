@@ -1,0 +1,26 @@
+$kind: http-request
+name: Update User
+method: PUT
+url: '{{baseUrl}}/api/users/:id'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{authToken}}'
+pathVariables:
+  - key: id
+    value: '{{userId}}'
+body:
+  type: json
+  content: |-
+    {
+      "firstName": "John",
+      "lastName": "Doe",
+      "phoneNumber": "+1234567890",
+      "jobTitle": "Engineer",
+      "department": "Engineering"
+    }
