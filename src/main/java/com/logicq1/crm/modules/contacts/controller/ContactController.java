@@ -6,7 +6,9 @@ import com.logicq1.crm.modules.contacts.entity.Contact;
 import com.logicq1.crm.modules.contacts.services.ContactService;
 import com.logicq1.crm.modules.user.entity.User;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -70,6 +72,28 @@ public class ContactController {
         contactService.importContacts(file, authentication.getName());
 
         return ResponseEntity.ok("Contacts imported successfully");
+    }
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportContacts(
+            @AuthenticationPrincipal User user
+    ) {
+
+        byte[] excelFile =
+                contactService.exportContacts(
+                        user.getOrganization()
+                );
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=contacts.xlsx"
+                )
+                .contentType(
+                        MediaType.parseMediaType(
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
+                )
+                .body(excelFile);
     }
 
 }

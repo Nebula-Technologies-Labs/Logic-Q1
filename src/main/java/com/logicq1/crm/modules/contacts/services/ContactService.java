@@ -11,13 +11,16 @@ import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.modules.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +31,7 @@ public class ContactService {
     private ContactMapper contactMapper;
     private UserRepository userRepository;
 
-    public void createContact(CreateContactDto data, User user){
+    public void createContact(CreateContactDto data, User user) {
         Contact contact = contactMapper.toContact(data);
         contact.setOwner(user);
         contact.setOrganization(user.getOrganization());
@@ -36,18 +39,18 @@ public class ContactService {
         contactRepository.save(contact);
     }
 
-    public List<ContactDto> getContactByOwner(User owner){
+    public List<ContactDto> getContactByOwner(User owner) {
         List<Contact> contacts = contactRepository.findByOwner(owner);
         return contacts.stream().map(contactMapper::toContactDto).toList();
     }
 
-    public List<ContactDto> getContactByOrganization(String orgId){
+    public List<ContactDto> getContactByOrganization(String orgId) {
         Organization organization = organizationRepository.findById(orgId).orElseThrow(() -> new RuntimeException("Organization Not Found"));
         List<Contact> contacts = contactRepository.findByOrganization(organization);
         return contacts.stream().map(contactMapper::toContactDto).toList();
     }
 
-    public ContactDto getContactById(String id){
+    public ContactDto getContactById(String id) {
         Contact contact = contactRepository.findById(id).orElseThrow(() -> new RuntimeException("Contact not found"));
         return contactMapper.toContactDto(contact);
     }
@@ -121,6 +124,73 @@ public class ContactService {
             case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
             default -> null;
         };
+    }
+
+    public byte[] exportContacts(Organization organization) {
+
+        List<Contact> contacts =
+                contactRepository.findByOrganization(
+                        organization
+                );
+
+        try (
+                Workbook workbook = new XSSFWorkbook();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
+        ) {
+
+            Sheet sheet = workbook.createSheet("Contacts");
+
+            String[] headers = {
+                    "Name",
+                    "Email",
+                    "Secondary Email",
+                    "Phone Number",
+                    "Description",
+                    "Note",
+                    "Department",
+                    "Contact Source",
+                    "Title",
+                    "Address",
+                    "Country",
+                    "State",
+                    "City"
+            };
+
+            Row headerRow = sheet.createRow(0);
+
+            for (int i = 0; i < headers.length; i++) {
+                headerRow.createCell(i)
+                        .setCellValue(headers[i]);
+            }
+
+            int rowNumber = 1;
+
+            for (Contact contact : contacts) {
+
+                Row row = sheet.createRow(rowNumber++);
+
+                row.createCell(0).setCellValue(contact.getName());
+                row.createCell(1).setCellValue(contact.getEmail());
+                row.createCell(2).setCellValue(contact.getSecondaryEmail());
+                row.createCell(3).setCellValue(contact.getPhoneNumber());
+                row.createCell(4).setCellValue(contact.getDescription());
+                row.createCell(5).setCellValue(contact.getNote());
+                row.createCell(6).setCellValue(contact.getDepartment());
+                row.createCell(7).setCellValue(contact.getContactSource());
+                row.createCell(8).setCellValue(contact.getTitle());
+                row.createCell(9).setCellValue(contact.getAddress());
+                row.createCell(10).setCellValue(contact.getCountry());
+                row.createCell(11).setCellValue(contact.getState());
+                row.createCell(12).setCellValue(contact.getCity());
+            }
+
+            workbook.write(outputStream);
+
+            return outputStream.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to export contacts", e);
+        }
     }
 
 }
