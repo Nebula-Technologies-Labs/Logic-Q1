@@ -1,7 +1,7 @@
 $kind: collection
 name: CRM API
 variables:
-  baseUrl1: http://localhost:8080
+  baseUrl: http://localhost:8080
   authToken: ""
 auth:
   - id: b8514233-4243-4de8-ad96-19d560d19eef

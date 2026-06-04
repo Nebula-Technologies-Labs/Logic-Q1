@@ -1,0 +1,26 @@
+$kind: graphql-request
+url: http://localhost:8080/graphql
+query: |
+  query ListModules {
+      listModules {
+          id
+          organizationId
+          name
+          apiName
+          description
+          icon
+          isBuiltIn
+          isActive
+          createdBy
+          createdAt
+          updatedAt
+      }
+  }
+variables: ""
+auth:
+  type: bearer
+  credentials:
+    token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImlhdCI6MTc4MDU2MjE4MiwiZXhwIjoxNzgwNTY1MTgyfQ.bHL7oUseAz2t7GBVxiK-jSaL2wliCZegdsLQxgAimDk
+schema:
+  source: auto
+order: 1780563413012
