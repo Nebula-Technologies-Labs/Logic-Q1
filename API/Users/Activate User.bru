@@ -1,0 +1,22 @@
+meta {
+  name: Activate User
+  type: http
+  seq: 4
+  tags: [
+    Users
+  ]
+}
+
+patch {
+  url: {{baseUrl}}/api/users/:id/activate
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{userId}}
+}
+
+auth:bearer {
+  token: {{token}}
+}

@@ -1,0 +1,22 @@
+meta {
+  name: Deactivate User
+  type: http
+  seq: 5
+  tags: [
+    Users
+  ]
+}
+
+patch {
+  url: {{baseUrl}}/api/users/:id/deactivate
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{userId}}
+}
+
+auth:bearer {
+  token: {{token}}
+}

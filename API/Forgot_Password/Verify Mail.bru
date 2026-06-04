@@ -1,0 +1,18 @@
+meta {
+  name: Verify Mail
+  type: http
+  seq: 1
+  tags: [
+    Forgot_Password
+  ]
+}
+
+post {
+  url: {{baseUrl}}/forgotPassword/verifyMail/:email
+  body: none
+  auth: inherit
+}
+
+params:path {
+  email: john.doe@example.com
+}

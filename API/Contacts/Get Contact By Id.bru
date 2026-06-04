@@ -1,0 +1,22 @@
+meta {
+  name: Get Contact By Id
+  type: http
+  seq: 4
+  tags: [
+    Contacts
+  ]
+}
+
+get {
+  url: {{baseUrl}}/contact/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{contactId}}
+}
+
+auth:bearer {
+  token: {{token}}
+}
