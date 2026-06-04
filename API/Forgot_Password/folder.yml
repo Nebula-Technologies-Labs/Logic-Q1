@@ -1,7 +1,0 @@
-info:
-  name: Forgot_Password
-  type: folder
-  seq: 1
-
-request:
-  auth: inherit
