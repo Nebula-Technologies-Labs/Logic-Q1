@@ -1,0 +1,25 @@
+meta {
+  name: Create Invite
+  type: http
+  seq: 1
+  tags: [
+    Organization_Invites
+  ]
+}
+
+post {
+  url: {{baseUrl}}/api/organization/invites
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "email": "newmember@example.com",
+    "roleId": "{{roleId}}"
+  }
+}

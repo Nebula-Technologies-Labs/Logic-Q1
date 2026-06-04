@@ -1,0 +1,22 @@
+meta {
+  name: Delete Watch List
+  type: http
+  seq: 3
+  tags: [
+    Watch_List
+  ]
+}
+
+post {
+  url: {{baseUrl}}/api/watchList/delete/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{watchListId}}
+}
+
+auth:bearer {
+  token: {{token}}
+}

@@ -1,0 +1,18 @@
+meta {
+  name: Get All Organizations
+  type: http
+  seq: 3
+  tags: [
+    Organization
+  ]
+}
+
+get {
+  url: {{baseUrl}}/organization/all
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}

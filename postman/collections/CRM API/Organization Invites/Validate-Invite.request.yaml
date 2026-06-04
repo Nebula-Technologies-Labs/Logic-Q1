@@ -1,8 +1,0 @@
-$kind: http-request
-name: Validate Invite
-method: GET
-url: '{{baseUrl}}/api/organization/invites/:token'
-order: 2000
-pathVariables:
-  - key: token
-    value: '{{inviteToken}}'

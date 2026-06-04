@@ -1,0 +1,26 @@
+meta {
+  name: Create Watch List
+  type: http
+  seq: 1
+  tags: [
+    Watch_List
+  ]
+}
+
+post {
+  url: {{baseUrl}}/api/watchList/create
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "VIP Clients",
+    "email": "vip@example.com",
+    "phoneNumber": "+1987654321"
+  }
+}

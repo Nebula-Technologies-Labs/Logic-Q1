@@ -1,0 +1,22 @@
+meta {
+  name: Get Organization By Id
+  type: http
+  seq: 2
+  tags: [
+    Organization
+  ]
+}
+
+get {
+  url: {{baseUrl}}/organization/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{orgId}}
+}
+
+auth:bearer {
+  token: {{token}}
+}

@@ -1,0 +1,32 @@
+meta {
+  name: Update User
+  type: http
+  seq: 2
+  tags: [
+    Users
+  ]
+}
+
+put {
+  url: {{baseUrl}}/api/users/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{userId}}
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "phoneNumber": "+1234567890",
+    "jobTitle": "Engineer",
+    "department": "Engineering"
+  }
+}

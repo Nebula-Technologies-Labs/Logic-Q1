@@ -1,0 +1,18 @@
+meta {
+  name: Validate Invite
+  type: http
+  seq: 2
+  tags: [
+    Organization_Invites
+  ]
+}
+
+get {
+  url: {{baseUrl}}/api/organization/invites/:token
+  body: none
+  auth: inherit
+}
+
+params:path {
+  token: {{inviteToken}}
+}
