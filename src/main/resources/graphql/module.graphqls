@@ -1,0 +1,35 @@
+type Module {
+  id: ID!
+  organizationId: ID
+  name: String!
+  apiName: String!
+  description: String
+  icon: String
+  isBuiltIn: Boolean
+  isActive: Boolean
+  createdBy: ID
+  createdAt: String
+  updatedAt: String
+}
+
+input ModuleInput {
+  organizationId: ID
+  name: String!
+  apiName: String!
+  description: String
+  icon: String
+  isBuiltIn: Boolean
+  isActive: Boolean
+  createdBy: ID
+}
+
+type Query {
+  getModule(id: ID!): Module
+  listModules: [Module!]!
+}
+
+type Mutation {
+  createModule(input: ModuleInput!): Module
+  updateModule(id: ID!, input: ModuleInput!): Module
+  deleteModule(id: ID!): Boolean
+}
