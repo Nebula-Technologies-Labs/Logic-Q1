@@ -1,0 +1,21 @@
+info:
+  name: Validate Invite
+  type: http
+  seq: 2
+  tags:
+    - Organization_Invites
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/organization/invites/:token"
+  params:
+    - name: token
+      value: "{{inviteToken}}"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

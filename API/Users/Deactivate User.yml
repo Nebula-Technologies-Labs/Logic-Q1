@@ -1,0 +1,23 @@
+info:
+  name: Deactivate User
+  type: http
+  seq: 5
+  tags:
+    - Users
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/users/:id/deactivate"
+  params:
+    - name: id
+      value: "{{userId}}"
+      type: path
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

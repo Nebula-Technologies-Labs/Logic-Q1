@@ -1,0 +1,28 @@
+info:
+  name: Create Organization
+  type: http
+  seq: 1
+  tags:
+    - Organization
+
+http:
+  method: POST
+  url: "{{baseUrl}}/organization/create"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Acme Corp",
+        "category": "Technology",
+        "country": "US",
+        "websiteUrl": "https://acme.com"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

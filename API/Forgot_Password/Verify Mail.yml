@@ -1,0 +1,21 @@
+info:
+  name: Verify Mail
+  type: http
+  seq: 1
+  tags:
+    - Forgot_Password
+
+http:
+  method: POST
+  url: "{{baseUrl}}/forgotPassword/verifyMail/:email"
+  params:
+    - name: email
+      value: john.doe@example.com
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

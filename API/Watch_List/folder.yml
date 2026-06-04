@@ -1,0 +1,7 @@
+info:
+  name: Watch_List
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

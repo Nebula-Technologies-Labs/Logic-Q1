@@ -1,0 +1,23 @@
+info:
+  name: Get Organization By Id
+  type: http
+  seq: 2
+  tags:
+    - Organization
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organization/:id"
+  params:
+    - name: id
+      value: "{{orgId}}"
+      type: path
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

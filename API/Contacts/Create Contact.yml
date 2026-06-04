@@ -1,0 +1,36 @@
+info:
+  name: Create Contact
+  type: http
+  seq: 1
+  tags:
+    - Contacts
+
+http:
+  method: POST
+  url: "{{baseUrl}}/contact/create"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "contact@example.com",
+        "name": "Alice Smith",
+        "phoneNumber": "+1234567890",
+        "secondaryEmail": "alice.alt@example.com",
+        "description": "Key client",
+        "note": "Met at conference",
+        "title": "CEO",
+        "department": "Executive",
+        "contactSource": "Website",
+        "country": "US",
+        "city": "New York",
+        "state": "NY"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
