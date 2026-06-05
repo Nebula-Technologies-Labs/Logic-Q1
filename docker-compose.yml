@@ -22,11 +22,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      # Override the hardcoded localhost URL in application.properties so the
-      # app reaches the db service over the compose network.
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/logicdb
-      SPRING_FLYWAY_URL: jdbc:postgresql://db:5432/logicdb
+    env_file:
+      - .env
     ports:
       - "8081:8080"
 

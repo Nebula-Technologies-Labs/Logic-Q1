@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
 
-# ---- Build stage (JDK 25, required by the maven-enforcer plugin) ----
+# ---- Build stage (JDK 25) ----
 FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /app
 
-# Cache dependencies first
+# Cache dependencies
 COPY pom.xml .
 RUN mvn -B -q dependency:go-offline
 

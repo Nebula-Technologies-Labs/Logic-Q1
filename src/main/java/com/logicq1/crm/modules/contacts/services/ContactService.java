@@ -12,9 +12,11 @@ import com.logicq1.crm.modules.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -51,7 +53,15 @@ public class ContactService {
     }
 
     public ContactDto getContactById(String id) {
-        Contact contact = contactRepository.findById(id).orElseThrow(() -> new RuntimeException("Contact not found"));
+        UUID contactId;
+        try {
+            contactId = UUID.fromString(id);
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Invalid contact id: '" + id + "' is not a valid UUID");
+        }
+        Contact contact = contactRepository.findById(contactId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact not found"));
         return contactMapper.toContactDto(contact);
     }
 
