@@ -45,7 +45,7 @@ public class ContactService {
     }
 
     public List<ContactDto> getContactByOrganization(String orgId) {
-        Organization organization = organizationRepository.findById(orgId).orElseThrow(() -> new RuntimeException("Organization Not Found"));
+        Organization organization = organizationRepository.findById(UUID.fromString(orgId)).orElseThrow(() -> new RuntimeException("Organization Not Found"));
         List<Contact> contacts = contactRepository.findByOrganization(organization);
         return contacts.stream().map(contactMapper::toContactDto).toList();
     }
