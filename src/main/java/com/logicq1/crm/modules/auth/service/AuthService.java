@@ -1,13 +1,13 @@
 package com.logicq1.crm.modules.auth.service;
 
+import com.logicq1.crm.enums.AuthProvider;
+import com.logicq1.crm.enums.InviteStatus;
+import com.logicq1.crm.enums.UserRole;
 import com.logicq1.crm.modules.auth.dto.LoginRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterInviteRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterRequest;
-import com.logicq1.crm.enums.AuthProvider;
-import com.logicq1.crm.modules.organization.entity.Roles;
-import com.logicq1.crm.enums.UserRole;
 import com.logicq1.crm.modules.organization.entity.OrganizationInvite;
-import com.logicq1.crm.enums.InviteStatus;
+import com.logicq1.crm.modules.organization.entity.Roles;
 import com.logicq1.crm.modules.organization.repository.OrganizationInviteRepository;
 import com.logicq1.crm.modules.organization.repository.RolesRepository;
 import com.logicq1.crm.modules.user.entity.User;
@@ -36,7 +36,7 @@ public class AuthService {
     private final OrganizationInviteRepository organizationInviteRepository;
     private final RolesRepository rolesRepository;
     private final AuthenticationManager authManager;
-    private JwtUtil jwtService;
+    private final JwtUtil jwtService;
 
 
     public void registerUser(RegisterRequest data) throws RuntimeException {
