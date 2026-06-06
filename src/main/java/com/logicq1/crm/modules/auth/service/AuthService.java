@@ -4,6 +4,7 @@ import com.logicq1.crm.enums.AuthProvider;
 import com.logicq1.crm.enums.InviteStatus;
 import com.logicq1.crm.enums.UserRole;
 import com.logicq1.crm.modules.auth.dto.LoginRequest;
+import com.logicq1.crm.modules.auth.dto.LoginResponse;
 import com.logicq1.crm.modules.auth.dto.RegisterInviteRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterRequest;
 import com.logicq1.crm.modules.organization.entity.OrganizationInvite;
@@ -135,8 +136,7 @@ public class AuthService {
 
         organizationInviteRepository.save(invite);
     }
-    public String login(LoginRequest request) {
-
+    public LoginResponse login(LoginRequest request) {
 
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -150,7 +150,9 @@ public class AuthService {
                 LocalDateTime.now()
         );
 
-        return jwtService.generateToken(request.getEmail());
+        return LoginResponse.builder()
+                .token(jwtService.generateToken(request.getEmail()))
+                .build();
     }
 
 }

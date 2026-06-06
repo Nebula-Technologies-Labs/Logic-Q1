@@ -9,6 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -27,43 +31,43 @@ public class LeadController {
 
 
     //create
-    @RequestMapping("/create")
-    public ResponseEntity<String> createLead(@RequestBody CreateLeadRequest request){
+    @PostMapping
+    public ResponseEntity<?> createLead(@RequestBody CreateLeadRequest request){
         return leadService.createLead(request);
     }
 
     //update
-    @RequestMapping("/update")
-    public ResponseEntity<String> updateLead(@RequestBody UpdateLeadRequest request){
+    @PutMapping
+    public ResponseEntity<?> updateLead(@RequestBody UpdateLeadRequest request){
         return leadService.updateLead(request);
     }
 
     //delete
-    @RequestMapping("/delete/{id}")
-    public ResponseEntity<String> deleteLead(@PathVariable("id") UUID leadId){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteLead(@PathVariable("id") UUID leadId){
         return leadService.deleteLead(leadId);
     }
 
     //get all
-    @RequestMapping("/listAll")
+    @GetMapping
     public ResponseEntity<?> listAllLeads(){
         return leadService.listAllLeads();
     }
 
     //get by id
-    @RequestMapping("/get/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getLeadById(@PathVariable("id") UUID leadId) {
         return leadService.getLeadById(leadId);
     }
 
     //convert from lead to contact
-    @RequestMapping("/convertToContact/{id}")
+    @PostMapping("/{id}/convert-to-contact")
     public ResponseEntity<String> convertToContact(@PathVariable("id") UUID leadId) {
         return contactService.convertLeadToContact(leadId);
     }
 
     //send mail
-    @RequestMapping("/sendMail")
+    @PostMapping("/send-mail")
     public ResponseEntity<String> sendMailToLead(@RequestBody MailBody emailContent) {
         return leadService.sendMailToLead(emailContent);
     }

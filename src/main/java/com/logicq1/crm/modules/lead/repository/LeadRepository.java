@@ -11,10 +11,11 @@ import java.util.UUID;
 
 public interface LeadRepository extends JpaRepository<Lead, UUID> {
 
-    boolean findLeadByEmail(String email);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM Lead l WHERE l.id = :leadId")
     int deleteByIdAndReturnCount(@Param("leadId") UUID leadId);
+
+    boolean existsByEmail(String email);
 }

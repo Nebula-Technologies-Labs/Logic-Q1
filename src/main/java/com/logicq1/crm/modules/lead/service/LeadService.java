@@ -6,6 +6,7 @@ import com.logicq1.crm.modules.email.dto.MailBody;
 import com.logicq1.crm.modules.email.service.EmailService;
 import com.logicq1.crm.modules.lead.LeadMapper;
 import com.logicq1.crm.modules.lead.dto.CreateLeadRequest;
+import com.logicq1.crm.modules.lead.dto.LeadDTO;
 import com.logicq1.crm.modules.lead.dto.UpdateLeadRequest;
 import com.logicq1.crm.modules.lead.entity.Lead;
 import com.logicq1.crm.modules.lead.repository.LeadRepository;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -37,9 +39,9 @@ public class LeadService {
     }
 
 
-    public ResponseEntity<String> createLead(CreateLeadRequest request) {
+    public ResponseEntity<?> createLead(CreateLeadRequest request) {
 
-        if (leadRepository.findLeadByEmail(request.email())) {
+        if (leadRepository.existsByEmail(request.email())) {
             return ResponseEntity.badRequest()
                     .body("Lead with email " + request.email() + " already exists.");
         }
@@ -83,12 +85,12 @@ public class LeadService {
             lead.setLeadStatus(LeadStatus.NEW);
         }
 
-        leadRepository.save(lead);
+        Lead savedLead = leadRepository.save(lead);
 
-        return ResponseEntity.ok("Lead created successfully");
+        return ResponseEntity.ok(leadMapper.toDTO(savedLead));
     }
 
-    public ResponseEntity<String> updateLead(UpdateLeadRequest request) {
+    public ResponseEntity<?> updateLead(UpdateLeadRequest request) {
         Lead lead = leadRepository.findById(request.leadId())
                 .orElseThrow(() -> new RuntimeException("Lead not found"));
 
@@ -99,9 +101,9 @@ public class LeadService {
         lead.setUpdatedBy(currentUser);
         lead.setUpdatedAt(LocalDateTime.now());
 
-        leadRepository.save(lead);
+        Lead savedLead = leadRepository.save(lead);
 
-        return ResponseEntity.ok("Lead updated successfully");
+        return ResponseEntity.ok(leadMapper.toDTO(savedLead));
 
     }
 
@@ -117,16 +119,22 @@ public class LeadService {
         return ResponseEntity.ok("Lead deleted successfully");
     }
 
-    public ResponseEntity<?> listAllLeads() {
-        return ResponseEntity.ok(leadRepository.findAll());
+    public ResponseEntity<List<LeadDTO>> listAllLeads() {
+        return ResponseEntity.ok(
+                leadMapper.toDTO(
+                        leadRepository.findAll()
+                )
+        );
     }
 
-    public ResponseEntity<?> getLeadById(UUID leadId) {
+    public ResponseEntity<LeadDTO> getLeadById(UUID leadId) {
+
         return leadRepository.findById(leadId)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() ->
-                        ResponseEntity.badRequest()
-                                .body("Lead not found"));
+                .map(lead -> ResponseEntity.ok(
+                        leadMapper.toDTO(lead)
+                ))
+                .orElseThrow(() ->
+                        new RuntimeException("Lead not found"));
     }
 
 
