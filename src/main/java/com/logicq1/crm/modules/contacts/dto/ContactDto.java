@@ -3,7 +3,10 @@ package com.logicq1.crm.modules.contacts.dto;
 import com.logicq1.crm.modules.organization.entity.Organization;
 import com.logicq1.crm.modules.user.entity.User;
 
+import java.util.UUID;
+
 public record ContactDto(
+        UUID id,
         String email,
         String name,
         String phoneNumber,
