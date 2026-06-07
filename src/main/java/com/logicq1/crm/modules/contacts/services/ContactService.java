@@ -1,5 +1,6 @@
 package com.logicq1.crm.modules.contacts.services;
 
+import com.logicq1.crm.modules.activityTImeline.service.ActivityTimelineService;
 import com.logicq1.crm.modules.contacts.dto.ContactDto;
 import com.logicq1.crm.modules.contacts.dto.CreateContactDto;
 import com.logicq1.crm.modules.contacts.entity.Contact;
@@ -31,6 +32,7 @@ public class ContactService {
     private ContactRepository contactRepository;
     private ContactMapper contactMapper;
     private UserRepository userRepository;
+    private ActivityTimelineService activityTimelineService;
 
     public void createContact(CreateContactDto data, User user) {
         Contact contact = contactMapper.toContact(data);
@@ -38,6 +40,12 @@ public class ContactService {
         contact.setOrganization(user.getOrganization());
 
         contactRepository.save(contact);
+
+        activityTimelineService.logCreate(
+                "CONTACT",
+                contact.getId(),
+                user.getId()
+        );
     }
 
     public List<ContactDto> getContactByOwner(User owner) {
@@ -114,7 +122,15 @@ public class ContactService {
                 contacts.add(contact);
             }
 
-            contactRepository.saveAll(contacts);
+            List<Contact> savedContacts = contactRepository.saveAll(contacts);
+
+            for (Contact contact : savedContacts) {
+                activityTimelineService.logCreate(
+                        "CONTACT",
+                        contact.getId(),
+                        owner.getId()
+                );
+            }
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to import contacts", e);
