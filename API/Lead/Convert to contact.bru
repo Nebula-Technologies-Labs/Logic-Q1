@@ -1,0 +1,16 @@
+meta {
+  name: Convert to contact
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/leads/5f2670f0-0388-4bdf-b39f-620a2f77e632/convert-to-contact
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}

@@ -26,7 +26,7 @@ public class Roles {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
 

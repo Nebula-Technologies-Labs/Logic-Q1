@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,9 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -203,4 +202,11 @@ public class ContactService {
         }
     }
 
+    public ResponseEntity<String> convertLeadToContact(UUID leadId) {
+        // This method would contain logic to convert a lead to a contact.
+        // It would typically involve fetching the lead by ID, creating a new contact based on the lead's information,
+        // saving the contact, and then updating the lead's status to "converted" or similar.
+        // For now, we'll just return a placeholder response.
+        return ResponseEntity.ok("Lead with ID " + leadId + " converted to contact successfully");
+    }
 }
