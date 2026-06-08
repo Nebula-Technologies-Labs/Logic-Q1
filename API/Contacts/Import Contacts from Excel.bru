@@ -5,11 +5,20 @@ meta {
 }
 
 post {
-  url: 
-  body: none
-  auth: inherit
+  url: {{baseUrl}}/contact/import
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:multipart-form {
+  file: @file(D:\draov\Downloads\contacts.xlsx)
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
