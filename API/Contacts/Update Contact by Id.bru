@@ -1,0 +1,42 @@
+meta {
+  name: Update Contact by Id
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/contact/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: {{contactId}}
+}
+
+body:json {
+  {
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+    "phoneNumber": "9876543210",
+    "secondaryEmail": "john.work@gmail.com",
+    "description": "Interested in CRM demo",
+    "note": "Follow up next week",
+    "title": "Software Engineer",
+    "department": "Engineering",
+    "ContactSource": "Website",
+    "country": "India",
+    "city": "Trichy",
+    "state": "Tamil Nadu",
+    "contactSource": "Website"
+  }
+}
+
+vars:pre-request {
+  contactId: c95993b1-410e-4c02-b441-43caff87a8bf
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

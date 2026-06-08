@@ -15,4 +15,9 @@ public interface ContactRepository extends JpaRepository<Contact, UUID> {
     List<Contact> findByOwner(User owner);
 
     List<Contact> findByOrganization(Organization organization);
+
+    Optional<Contact> findByEmailAndOrganization(
+            String email,
+            Organization organization
+    );
 }

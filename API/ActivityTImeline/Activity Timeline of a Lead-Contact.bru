@@ -5,11 +5,17 @@ meta {
 }
 
 get {
-  url: 
+  url: {{baseUrl}}/api/activity-timeline?entityType=CONTACT&entityId=4d6ba3e6-ecf0-4044-a09a-3f7e0839da59
   body: none
   auth: inherit
 }
 
+params:query {
+  entityType: CONTACT
+  entityId: 4d6ba3e6-ecf0-4044-a09a-3f7e0839da59
+}
+
 settings {
   encodeUrl: true
+  timeout: 0
 }

@@ -95,5 +95,39 @@ public class ContactController {
                 )
                 .body(excelFile);
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> updateContact(
+            @PathVariable String id,
+            @RequestBody CreateContactDto data,
+            @AuthenticationPrincipal User user
+    ) {
+
+        ContactDto contact =
+                contactService.updateContact(id, data, user);
+
+        HashMap<String, Object> response = new HashMap<>();
+
+        response.put("status", true);
+        response.put("contact", contact);
+        response.put("message", "Contact Updated Successfully");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> deleteContact(
+            @PathVariable String id,
+            @AuthenticationPrincipal User user
+    ) {
+
+        contactService.deleteContact(id, user);
+
+        HashMap<String, Object> response = new HashMap<>();
+
+        response.put("status", true);
+        response.put("message", "Contact Deleted Successfully");
+
+        return ResponseEntity.ok(response);
+    }
 
 }
