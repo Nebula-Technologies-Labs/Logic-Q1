@@ -1,6 +1,7 @@
 package com.logicq1.crm.modules.lead.service;
 
 import com.logicq1.crm.enums.LeadStatus;
+import com.logicq1.crm.modules.activityTImeline.service.ActivityTimelineService;
 import com.logicq1.crm.modules.auth.service.CurrentUserService;
 import com.logicq1.crm.modules.email.dto.MailBody;
 import com.logicq1.crm.modules.email.service.EmailService;
@@ -15,6 +16,7 @@ import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.modules.user.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,14 +30,22 @@ public class LeadService {
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
     private final EmailService emailService;
+    private final ActivityTimelineService activityTimelineService;
 
-
-    public LeadService(LeadRepository leadRepository, LeadMapper leadMapper, UserRepository userRepository, CurrentUserService currentUserService, EmailService emailService) {
+    public LeadService(
+            LeadRepository leadRepository,
+            LeadMapper leadMapper,
+            UserRepository userRepository,
+            CurrentUserService currentUserService,
+            EmailService emailService,
+            ActivityTimelineService activityTimelineService
+    ) {
         this.leadRepository = leadRepository;
         this.leadMapper = leadMapper;
         this.userRepository = userRepository;
         this.currentUserService = currentUserService;
         this.emailService = emailService;
+        this.activityTimelineService = activityTimelineService;
     }
 
 
@@ -87,6 +97,12 @@ public class LeadService {
 
         Lead savedLead = leadRepository.save(lead);
 
+        activityTimelineService.logCreate(
+                "LEAD",
+                savedLead.getId(),
+                currentUser.getId()
+        );
+
         return ResponseEntity.ok(leadMapper.toDTO(savedLead));
     }
 
@@ -94,12 +110,23 @@ public class LeadService {
         Lead lead = leadRepository.findById(request.leadId())
                 .orElseThrow(() -> new RuntimeException("Lead not found"));
 
+        Lead oldLead = new Lead();
+        BeanUtils.copyProperties(lead, oldLead);
+
         leadMapper.updateLeadFromDto(request, lead);
 
         User currentUser = currentUserService.getCurrentUser();
 
         lead.setUpdatedBy(currentUser);
         lead.setUpdatedAt(LocalDateTime.now());
+
+        activityTimelineService.logChanges(
+                "LEAD",
+                lead.getId(),
+                oldLead,
+                lead,
+                currentUser.getId()
+        );
 
         Lead savedLead = leadRepository.save(lead);
 
@@ -115,6 +142,12 @@ public class LeadService {
             return ResponseEntity.badRequest()
                     .body("Lead not found or already deleted");
         }
+        User currentUser = currentUserService.getCurrentUser();
+        activityTimelineService.logDelete(
+                "LEAD",
+                leadId,
+                currentUser.getId()
+        );
 
         return ResponseEntity.ok("Lead deleted successfully");
     }

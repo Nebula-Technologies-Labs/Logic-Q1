@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/leads/5f2670f0-0388-4bdf-b39f-620a2f77e632
+  url: {{baseUrl}}/api/leads/{{LeadID}}
   body: json
   auth: none
 }
@@ -13,4 +13,8 @@ get {
 headers {
   Content-Type: application/json
   Authorization: Bearer {{token}}
+}
+
+vars:pre-request {
+  LeadID: 83f2f2ed-c636-4111-9252-a6469d1575d2
 }
