@@ -5,14 +5,19 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/activity-timeline?entityType=CONTACT&entityId=47d8e8d5-1ed4-4559-b389-1ac0ab478f02
+  url: {{baseUrl}}/api/activity-timeline?entityType={{EntityType}}&entityId={{EntityId}}
   body: none
   auth: inherit
 }
 
 params:query {
-  entityType: CONTACT
-  entityId: 47d8e8d5-1ed4-4559-b389-1ac0ab478f02
+  entityType: {{EntityType}}
+  entityId: {{EntityId}}
+}
+
+vars:pre-request {
+  EntityType: LEAD
+  EntityId: 83f2f2ed-c636-4111-9252-a6469d1575d2
 }
 
 settings {

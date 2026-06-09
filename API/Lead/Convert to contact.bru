@@ -5,12 +5,20 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/leads/5f2670f0-0388-4bdf-b39f-620a2f77e632/convert-to-contact
+  url: {{baseUrl}}/api/leads/{{LeadID}}/convert-to-contact?LeadID=
   body: json
   auth: none
+}
+
+params:query {
+  LeadID: 
 }
 
 headers {
   Content-Type: application/json
   Authorization: Bearer {{token}}
+}
+
+vars:pre-request {
+  LeadID: 83f2f2ed-c636-4111-9252-a6469d1575d2
 }
