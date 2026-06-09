@@ -20,7 +20,7 @@ public record ContactDto(
         String city,
         String state,
         String contactSource,
-        User owner,
-        Organization organization
+        UUID ownerId,
+        UUID organizationId
 ) {
 }

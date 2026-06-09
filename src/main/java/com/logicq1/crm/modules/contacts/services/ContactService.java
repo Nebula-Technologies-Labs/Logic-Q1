@@ -13,6 +13,7 @@ import com.logicq1.crm.modules.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -242,166 +243,21 @@ public class ContactService {
                                 HttpStatus.NOT_FOUND,
                                 "Contact not found"
                         ));
+
         validateOrganizationAccess(contact, user);
 
-        if (!java.util.Objects.equals(contact.getEmail(), data.email())) {
+        Contact oldContact = new Contact();
+        BeanUtils.copyProperties(contact, oldContact);
 
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "email",
-                    contact.getEmail(),
-                    data.email(),
-                    user.getId()
-            );
+        contactMapper.updateContactFromDto(data, contact);
 
-            contact.setEmail(data.email());
-        }
-
-        if (!java.util.Objects.equals(contact.getPhoneNumber(), data.phoneNumber())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "phoneNumber",
-                    contact.getPhoneNumber(),
-                    data.phoneNumber(),
-                    user.getId()
-            );
-
-            contact.setPhoneNumber(data.phoneNumber());
-        }
-
-        if (!java.util.Objects.equals(contact.getName(), data.name())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "name",
-                    contact.getName(),
-                    data.name(),
-                    user.getId()
-            );
-
-            contact.setName(data.name());
-        }
-        if (!java.util.Objects.equals(contact.getSecondaryEmail(), data.secondaryEmail())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "secondaryEmail",
-                    contact.getSecondaryEmail(),
-                    data.secondaryEmail(),
-                    user.getId()
-            );
-
-            contact.setSecondaryEmail(data.secondaryEmail());
-        }
-        if (!java.util.Objects.equals(contact.getDepartment(), data.department())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "department",
-                    contact.getDepartment(),
-                    data.department(),
-                    user.getId()
-            );
-
-            contact.setDepartment(data.department());
-        }
-        if (!java.util.Objects.equals(contact.getTitle(), data.title())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "title",
-                    contact.getTitle(),
-                    data.title(),
-                    user.getId()
-            );
-
-            contact.setTitle(data.title());
-        }
-        if (!java.util.Objects.equals(contact.getDescription(), data.description())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "description",
-                    contact.getDescription(),
-                    data.description(),
-                    user.getId()
-            );
-
-            contact.setDescription(data.description());
-        }
-        if (!java.util.Objects.equals(contact.getNote(), data.note())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "note",
-                    contact.getNote(),
-                    data.note(),
-                    user.getId()
-            );
-
-            contact.setNote(data.note());
-        }
-        if (!java.util.Objects.equals(contact.getCountry(), data.country())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "country",
-                    contact.getCountry(),
-                    data.country(),
-                    user.getId()
-            );
-
-            contact.setCountry(data.country());
-        }
-        if (!java.util.Objects.equals(contact.getState(), data.state())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "state",
-                    contact.getState(),
-                    data.state(),
-                    user.getId()
-            );
-
-            contact.setState(data.state());
-        }
-        if (!java.util.Objects.equals(contact.getCity(), data.city())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "city",
-                    contact.getCity(),
-                    data.city(),
-                    user.getId()
-            );
-
-            contact.setCity(data.city());
-        }
-        if (!java.util.Objects.equals(contact.getContactSource(), data.contactSource())) {
-
-            activityTimelineService.logUpdate(
-                    "CONTACT",
-                    contact.getId(),
-                    "contactSource",
-                    contact.getContactSource(),
-                    data.contactSource(),
-                    user.getId()
-            );
-
-            contact.setContactSource(data.contactSource());
-        }
+        activityTimelineService.logChanges(
+                "CONTACT",
+                contact.getId(),
+                oldContact,
+                contact,
+                user.getId()
+        );
 
         contact = contactRepository.save(contact);
 

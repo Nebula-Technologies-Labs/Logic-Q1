@@ -5,7 +5,9 @@ import com.logicq1.crm.modules.activityTImeline.repository.ActivityTimelineRepos
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -50,6 +52,40 @@ public class ActivityTimelineService {
                 .build();
 
         repository.save(activity);
+    }
+    public void logChanges(
+            String entityType,
+            UUID entityId,
+            Object oldObj,
+            Object newObj,
+            UUID userId
+    ) {
+
+        for (Field field : oldObj.getClass().getDeclaredFields()) {
+
+            try {
+
+                field.setAccessible(true);
+
+                Object oldValue = field.get(oldObj);
+                Object newValue = field.get(newObj);
+
+                if (!Objects.equals(oldValue, newValue)) {
+
+                    logUpdate(
+                            entityType,
+                            entityId,
+                            field.getName(),
+                            oldValue == null ? null : oldValue.toString(),
+                            newValue == null ? null : newValue.toString(),
+                            userId
+                    );
+                }
+
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void logDelete(
