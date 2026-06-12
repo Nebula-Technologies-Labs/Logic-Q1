@@ -17,6 +17,7 @@ pipeline {
         APP_NAME = 'crm'
         SPRING_PROFILES_ACTIVE = 'test'
         MAVEN_OPTS = '-Xmx1024m -Dmaven.repo.local=.m2/repository'
+        DEPLOY_DIR = '/opt/crm'
     }
 
     triggers {
@@ -35,6 +36,7 @@ pipeline {
             steps {
                 sh 'java -version'
                 sh 'mvn -version'
+                sh 'docker --version'
             }
         }
 
@@ -42,8 +44,8 @@ pipeline {
             steps {
                 sh '''
                 mvn clean package \
-                -Dspring.profiles.active=test
-                '''
+                  -Dspring.profiles.active=test
+            '''
             }
         }
 
@@ -61,17 +63,44 @@ pipeline {
 
             steps {
 
-                echo 'Deploying MASTER branch...'
+                echo 'Deploying master branch...'
 
                 sh '''
-                cp target/*.jar /opt/crm/crm.jar
+                mkdir -p ${DEPLOY_DIR}
 
-                cd /opt/crm
+                rsync -av --delete \
+                  --exclude .git \
+                  --exclude .env \
+                  ./ ${DEPLOY_DIR}/
 
-                docker compose down
+                cd ${DEPLOY_DIR}
 
-                docker compose up --build -d
-                '''
+                docker compose down || true
+                docker compose up -d --build
+            '''
+            }
+        }
+
+        stage('Health Check') {
+
+            when {
+                branch 'master'
+            }
+
+            steps {
+
+                sh '''
+                echo "Waiting for application startup..."
+
+                sleep 20
+
+                docker ps | grep crm-backend
+
+                docker logs crm-backend --tail 50
+
+                docker exec crm-backend \
+                  curl -f http://localhost:3210/auth/register || true
+            '''
             }
         }
     }
@@ -84,6 +113,10 @@ pipeline {
 
         failure {
             echo 'Build failed.'
+
+            sh '''
+            docker logs crm-backend --tail 200 || true
+        '''
         }
 
         always {
