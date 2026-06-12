@@ -6,7 +6,9 @@ import com.logicq1.crm.modules.contacts.entity.Contact;
 import com.logicq1.crm.modules.contacts.services.ContactService;
 import com.logicq1.crm.modules.user.entity.User;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -70,6 +72,62 @@ public class ContactController {
         contactService.importContacts(file, authentication.getName());
 
         return ResponseEntity.ok("Contacts imported successfully");
+    }
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportContacts(
+            @AuthenticationPrincipal User user
+    ) {
+
+        byte[] excelFile =
+                contactService.exportContacts(
+                        user.getOrganization()
+                );
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=contacts.xlsx"
+                )
+                .contentType(
+                        MediaType.parseMediaType(
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
+                )
+                .body(excelFile);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> updateContact(
+            @PathVariable String id,
+            @RequestBody CreateContactDto data,
+            @AuthenticationPrincipal User user
+    ) {
+
+        ContactDto contact =
+                contactService.updateContact(id, data, user);
+
+        HashMap<String, Object> response = new HashMap<>();
+
+        response.put("status", true);
+        response.put("contact", contact);
+        response.put("message", "Contact Updated Successfully");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> deleteContact(
+            @PathVariable String id,
+            @AuthenticationPrincipal User user
+    ) {
+
+        contactService.deleteContact(id, user);
+
+        HashMap<String, Object> response = new HashMap<>();
+
+        response.put("status", true);
+        response.put("message", "Contact Deleted Successfully");
+
+        return ResponseEntity.ok(response);
     }
 
 }

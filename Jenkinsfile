@@ -61,17 +61,33 @@ pipeline {
 
             steps {
 
-                echo 'Deploying MASTER branch...'
+                sh '''
+            mkdir -p /opt/crm
+
+            rsync -av --delete \
+              --exclude .git \
+              --exclude .env \
+              ./ /opt/crm/
+
+            cd /opt/crm
+
+            docker compose up -d --build
+        '''
+            }
+        }
+        stage('Health Check') {
+
+            when {
+                branch 'master'
+            }
+
+            steps {
 
                 sh '''
-                cp target/*.jar /opt/crm/crm.jar
+            sleep 20
 
-                cd /opt/crm
-
-                docker compose down
-
-                docker compose up --build -d
-                '''
+            curl -f http://localhost:3210/actuator/health
+        '''
             }
         }
     }

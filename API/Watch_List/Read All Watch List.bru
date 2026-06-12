@@ -1,0 +1,18 @@
+meta {
+  name: Read All Watch List
+  type: http
+  seq: 2
+  tags: [
+    Watch_List
+  ]
+}
+
+post {
+  url: {{baseUrl}}/api/watchList/readAll
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}

@@ -1,5 +1,6 @@
 package com.logicq1.crm.modules.organization.entity;
 
+import com.logicq1.crm.modules.auth.entity.RolePermission;
 import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.enums.UserRole;
 import jakarta.persistence.*;
@@ -25,7 +26,7 @@ public class Roles {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
 
@@ -35,4 +36,10 @@ public class Roles {
 
     @OneToMany(mappedBy = "role")
     private List<User> users;
+
+    @OneToMany(
+            mappedBy = "role",
+            fetch = FetchType.EAGER
+    )
+    private List<RolePermission> rolePermissions;
 }

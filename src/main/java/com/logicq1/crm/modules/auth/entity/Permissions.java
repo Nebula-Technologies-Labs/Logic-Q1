@@ -1,6 +1,5 @@
 package com.logicq1.crm.modules.auth.entity;
 
-import com.logicq1.crm.modules.organization.entity.Roles;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,17 +14,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class Permissions {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String description;
-
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Roles role;
 
     @OneToMany(mappedBy = "permission")
     private List<RolePermission> rolePermissions;

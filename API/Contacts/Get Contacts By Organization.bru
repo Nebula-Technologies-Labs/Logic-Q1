@@ -1,0 +1,26 @@
+meta {
+  name: Get Contacts By Organization
+  type: http
+  seq: 3
+  tags: [
+    Contacts
+  ]
+}
+
+get {
+  url: {{baseUrl}}/contact/org/:orgId/
+  body: none
+  auth: bearer
+}
+
+params:path {
+  orgId: {{orgId}}
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+vars:pre-request {
+  orgId: 54297eb8-268f-417e-8298-205f221e7dd3
+}

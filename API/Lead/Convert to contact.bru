@@ -1,0 +1,24 @@
+meta {
+  name: Convert to contact
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/leads/{{LeadID}}/convert-to-contact?LeadID=
+  body: json
+  auth: none
+}
+
+params:query {
+  LeadID: 
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+vars:pre-request {
+  LeadID: 83f2f2ed-c636-4111-9252-a6469d1575d2
+}

@@ -1,0 +1,22 @@
+services:
+
+  crm-backend:
+
+    build: .
+
+    container_name: crm-backend
+
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "3210:8080"
+
+    networks:
+      - logicq1-network
+
+networks:
+  logicq1-network:
+    external: true

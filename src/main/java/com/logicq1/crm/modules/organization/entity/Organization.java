@@ -29,7 +29,7 @@ public class Organization {
 
     private String description;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "admin_id" , referencedColumnName = "id")
     private User adminId;
 
@@ -43,7 +43,7 @@ public class Organization {
 
     private String websiteUrl;
 
-    private String Category;
+    private String category;
 
     private String country;
 

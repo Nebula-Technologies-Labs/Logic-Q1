@@ -1,0 +1,20 @@
+meta {
+  name: Get Lead by ID
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/leads/{{LeadID}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+vars:pre-request {
+  LeadID: 83f2f2ed-c636-4111-9252-a6469d1575d2
+}

@@ -1,5 +1,6 @@
 package com.logicq1.crm.modules.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.logicq1.crm.enums.AuthProvider;
 import com.logicq1.crm.modules.contacts.entity.Contact;
 import com.logicq1.crm.modules.organization.entity.Organization;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -49,6 +51,7 @@ public class User implements UserDetails {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     private String phoneNumber;
@@ -73,6 +76,7 @@ public class User implements UserDetails {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
+    @JsonIgnore
     private User createdBy;
 
     private LocalDateTime lastLoginAt;
@@ -98,9 +102,18 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
 
+        return role.getRolePermissions()
+                .stream()
+                .map(rolePermission ->
+                        new SimpleGrantedAuthority(
+                                rolePermission
+                                        .getPermission()
+                                        .getName()
+                        )
+                )
+                .toList();
+    }
     @Override
     public String getUsername() {
         return email;

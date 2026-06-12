@@ -1,0 +1,24 @@
+meta {
+  name: Delete Contact by Id
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/contact/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: {{contactId}}
+}
+
+vars:pre-request {
+  contactId: 0f31801d-41f6-4d3c-ad4a-8b2af5fb0f78
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
