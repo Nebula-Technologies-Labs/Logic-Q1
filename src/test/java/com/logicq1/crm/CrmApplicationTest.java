@@ -5,5 +5,5 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @Disabled
 @SpringBootTest
-class CrmApplicationTests {
+class CrmApplicationTest {
 }

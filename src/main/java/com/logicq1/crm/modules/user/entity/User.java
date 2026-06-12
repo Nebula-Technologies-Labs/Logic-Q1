@@ -1,5 +1,6 @@
 package com.logicq1.crm.modules.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.logicq1.crm.enums.AuthProvider;
 import com.logicq1.crm.modules.contacts.entity.Contact;
 import com.logicq1.crm.modules.organization.entity.Organization;
@@ -50,6 +51,7 @@ public class User implements UserDetails {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     private String phoneNumber;
@@ -74,6 +76,7 @@ public class User implements UserDetails {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
+    @JsonIgnore
     private User createdBy;
 
     private LocalDateTime lastLoginAt;
