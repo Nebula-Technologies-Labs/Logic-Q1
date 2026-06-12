@@ -1,6 +1,7 @@
 package com.logicq1.crm.modules.activityTImeline.repository;
 
 
+import com.logicq1.crm.enums.ActivityVisibility;
 import com.logicq1.crm.modules.activityTImeline.entity.ActivityTimeline;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,6 @@ public interface ActivityTimelineRepository
             String entityType,
             UUID entityId
     );
+
+    List<ActivityTimeline> findByOrganizationIdAndVisibilityOrderByCreatedAtDesc(UUID organizationId, ActivityVisibility activityVisibility);
 }

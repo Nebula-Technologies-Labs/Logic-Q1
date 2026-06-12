@@ -302,6 +302,18 @@ public class ContactService {
         // It would typically involve fetching the lead by ID, creating a new contact based on the lead's information,
         // saving the contact, and then updating the lead's status to "converted" or similar.
         // For now, we'll just return a placeholder response.
+
+
+
+        activityTimelineService.logConvert(
+                "LEAD",
+                leadId,
+                "CONTACT",
+                leadId,
+                null,
+                null
+        );
+
         return ResponseEntity.ok("Lead with ID " + leadId + " converted to contact successfully");
     }
 }

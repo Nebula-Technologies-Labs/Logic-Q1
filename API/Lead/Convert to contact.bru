@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/leads/{{LeadID}}/convert-to-contact?LeadID=
+  url: {{baseUrl}}/api/leads/{{LeadID}}/convert-to-contact
   body: json
   auth: none
-}
-
-params:query {
-  LeadID: 
 }
 
 headers {
