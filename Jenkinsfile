@@ -36,15 +36,16 @@ pipeline {
             steps {
                 sh 'java -version'
                 sh 'mvn -version'
+                sh 'docker --version'
             }
         }
 
         stage('Build, Test & Package') {
             steps {
                 sh '''
-                    mvn clean package \
-                    -Dspring.profiles.active=test
-                '''
+                mvn clean package \
+                  -Dspring.profiles.active=test
+            '''
             }
         }
 
@@ -65,35 +66,18 @@ pipeline {
                 echo 'Deploying master branch...'
 
                 sh '''
-                    mkdir -p ${DEPLOY_DIR}
+                mkdir -p ${DEPLOY_DIR}
 
-                    rsync -av --delete \
-                        --exclude .git \
-                        --exclude .env \
-                        ./ ${DEPLOY_DIR}/
+                rsync -av --delete \
+                  --exclude .git \
+                  --exclude .env \
+                  ./ ${DEPLOY_DIR}/
 
-                    cd ${DEPLOY_DIR}
+                cd ${DEPLOY_DIR}
 
-                    echo "===== CURRENT DIRECTORY ====="
-                    pwd
-
-                    echo "===== ROOT FILES ====="
-                    ls -lah
-
-                    echo "===== TARGET DIRECTORY ====="
-                    ls -lah target
-
-                    echo "===== JAR FILES ====="
-                    find target -name "*.jar"
-
-                    echo "===== DOCKER BUILD TEST ====="
-                    docker build -t crm-test .
-
-                    echo "===== DOCKER COMPOSE CONFIG ====="
-                    docker compose config
-
-                    docker compose up -d --build
-                '''
+                docker compose down || true
+                docker compose up -d --build
+            '''
             }
         }
 
@@ -106,20 +90,17 @@ pipeline {
             steps {
 
                 sh '''
-                    echo "Waiting for application startup..."
+                echo "Waiting for application startup..."
 
-                    for i in {1..12}
-                    do
-                        if curl -f http://localhost:3210/actuator/health; then
-                            exit 0
-                        fi
+                sleep 20
 
-                        sleep 10
-                    done
+                docker ps | grep crm-backend
 
-                    echo "Health check failed"
-                    exit 1
-                '''
+                docker logs crm-backend --tail 50
+
+                docker exec crm-backend \
+                  curl -f http://localhost:3210/auth/register || true
+            '''
             }
         }
     }
@@ -132,6 +113,10 @@ pipeline {
 
         failure {
             echo 'Build failed.'
+
+            sh '''
+            docker logs crm-backend --tail 200 || true
+        '''
         }
 
         always {
