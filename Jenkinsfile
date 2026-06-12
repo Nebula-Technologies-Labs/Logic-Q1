@@ -17,6 +17,7 @@ pipeline {
         APP_NAME = 'crm'
         SPRING_PROFILES_ACTIVE = 'test'
         MAVEN_OPTS = '-Xmx1024m -Dmaven.repo.local=.m2/repository'
+        DEPLOY_DIR = '/opt/crm'
     }
 
     triggers {
@@ -41,8 +42,8 @@ pipeline {
         stage('Build, Test & Package') {
             steps {
                 sh '''
-                mvn clean package \
-                -Dspring.profiles.active=test
+                    mvn clean package \
+                    -Dspring.profiles.active=test
                 '''
             }
         }
@@ -61,20 +62,41 @@ pipeline {
 
             steps {
 
+                echo 'Deploying master branch...'
+
                 sh '''
-            mkdir -p /opt/crm
+                    mkdir -p ${DEPLOY_DIR}
 
-            rsync -av --delete \
-              --exclude .git \
-              --exclude .env \
-              ./ /opt/crm/
+                    rsync -av --delete \
+                        --exclude .git \
+                        --exclude .env \
+                        ./ ${DEPLOY_DIR}/
 
-            cd /opt/crm
+                    cd ${DEPLOY_DIR}
 
-            docker compose up -d --build
-        '''
+                    echo "===== CURRENT DIRECTORY ====="
+                    pwd
+
+                    echo "===== ROOT FILES ====="
+                    ls -lah
+
+                    echo "===== TARGET DIRECTORY ====="
+                    ls -lah target
+
+                    echo "===== JAR FILES ====="
+                    find target -name "*.jar"
+
+                    echo "===== DOCKER BUILD TEST ====="
+                    docker build -t crm-test .
+
+                    echo "===== DOCKER COMPOSE CONFIG ====="
+                    docker compose config
+
+                    docker compose up -d --build
+                '''
             }
         }
+
         stage('Health Check') {
 
             when {
@@ -84,10 +106,20 @@ pipeline {
             steps {
 
                 sh '''
-            sleep 20
+                    echo "Waiting for application startup..."
 
-            curl -f http://localhost:3210/actuator/health
-        '''
+                    for i in {1..12}
+                    do
+                        if curl -f http://localhost:3210/actuator/health; then
+                            exit 0
+                        fi
+
+                        sleep 10
+                    done
+
+                    echo "Health check failed"
+                    exit 1
+                '''
             }
         }
     }
