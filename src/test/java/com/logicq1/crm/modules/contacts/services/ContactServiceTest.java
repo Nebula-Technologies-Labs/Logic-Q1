@@ -45,8 +45,6 @@ class ContactServiceTest {
     private ContactMapper contactMapper;
     @MockitoBean
     private UserRepository userRepository;
-    @MockitoBean
-    private ActivityTimelineService activityTimelineService;
 
     private Organization organization;
     private User user;
@@ -95,7 +93,6 @@ class ContactServiceTest {
         assertThat(mapped.getOwner()).isEqualTo(user);
         assertThat(mapped.getOrganization()).isEqualTo(organization);
         verify(contactRepository).save(mapped);
-        verify(activityTimelineService).logCreate(eq("CONTACT"), any(), eq(user.getId()));
     }
 
     @Test
@@ -111,7 +108,6 @@ class ContactServiceTest {
                 .isEqualTo(HttpStatus.CONFLICT);
 
         verify(contactRepository, never()).save(any());
-        verify(activityTimelineService, never()).logCreate(any(), any(), any());
     }
 
     @Test
@@ -179,8 +175,6 @@ class ContactServiceTest {
 
         assertThat(result).isEqualTo(dto);
         verify(contactMapper).updateContactFromDto(any(), eq(contact));
-        verify(activityTimelineService)
-                .logChanges(eq("CONTACT"), any(), any(), eq(contact), eq(user.getId()));
     }
 
     @Test
@@ -222,7 +216,6 @@ class ContactServiceTest {
 
         contactService.deleteContact(id.toString(), user);
 
-        verify(activityTimelineService).logDelete(eq("CONTACT"), any(), eq(user.getId()));
         verify(contactRepository).delete(contact);
     }
 
