@@ -97,11 +97,6 @@ public class LeadService {
 
         Lead savedLead = leadRepository.save(lead);
 
-        activityTimelineService.logCreate(
-                "LEAD",
-                savedLead.getId(),
-                currentUser.getId()
-        );
 
         return ResponseEntity.ok(leadMapper.toDTO(savedLead));
     }
@@ -120,14 +115,6 @@ public class LeadService {
         lead.setUpdatedBy(currentUser);
         lead.setUpdatedAt(LocalDateTime.now());
 
-        activityTimelineService.logChanges(
-                "LEAD",
-                lead.getId(),
-                oldLead,
-                lead,
-                currentUser.getId()
-        );
-
         Lead savedLead = leadRepository.save(lead);
 
         return ResponseEntity.ok(leadMapper.toDTO(savedLead));
@@ -142,12 +129,6 @@ public class LeadService {
             return ResponseEntity.badRequest()
                     .body("Lead not found or already deleted");
         }
-        User currentUser = currentUserService.getCurrentUser();
-        activityTimelineService.logDelete(
-                "LEAD",
-                leadId,
-                currentUser.getId()
-        );
 
         return ResponseEntity.ok("Lead deleted successfully");
     }

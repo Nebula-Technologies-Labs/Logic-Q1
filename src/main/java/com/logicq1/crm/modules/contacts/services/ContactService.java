@@ -1,6 +1,5 @@
 package com.logicq1.crm.modules.contacts.services;
 
-import com.logicq1.crm.modules.activityTImeline.service.ActivityTimelineService;
 import com.logicq1.crm.modules.contacts.dto.ContactDto;
 import com.logicq1.crm.modules.contacts.dto.CreateContactDto;
 import com.logicq1.crm.modules.contacts.entity.Contact;
@@ -33,7 +32,6 @@ public class ContactService {
     private ContactRepository contactRepository;
     private ContactMapper contactMapper;
     private UserRepository userRepository;
-    private ActivityTimelineService activityTimelineService;
 
     public void createContact(CreateContactDto data, User user) {
         if (contactRepository.findByEmailAndOrganization(
@@ -51,12 +49,6 @@ public class ContactService {
         contact.setOrganization(user.getOrganization());
 
         contactRepository.save(contact);
-
-        activityTimelineService.logCreate(
-                "CONTACT",
-                contact.getId(),
-                user.getId()
-        );
     }
 
     public List<ContactDto> getContactByOwner(User owner) {
@@ -134,14 +126,6 @@ public class ContactService {
             }
 
             List<Contact> savedContacts = contactRepository.saveAll(contacts);
-
-            for (Contact contact : savedContacts) {
-                activityTimelineService.logCreate(
-                        "CONTACT",
-                        contact.getId(),
-                        owner.getId()
-                );
-            }
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to import contacts", e);
@@ -246,18 +230,8 @@ public class ContactService {
 
         validateOrganizationAccess(contact, user);
 
-        Contact oldContact = new Contact();
-        BeanUtils.copyProperties(contact, oldContact);
-
         contactMapper.updateContactFromDto(data, contact);
 
-        activityTimelineService.logChanges(
-                "CONTACT",
-                contact.getId(),
-                oldContact,
-                contact,
-                user.getId()
-        );
 
         contact = contactRepository.save(contact);
 
@@ -275,11 +249,6 @@ public class ContactService {
                         ));
         validateOrganizationAccess(contact, user);
 
-        activityTimelineService.logDelete(
-                "CONTACT",
-                contact.getId(),
-                user.getId()
-        );
 
         contactRepository.delete(contact);
     }
@@ -302,6 +271,9 @@ public class ContactService {
         // It would typically involve fetching the lead by ID, creating a new contact based on the lead's information,
         // saving the contact, and then updating the lead's status to "converted" or similar.
         // For now, we'll just return a placeholder response.
+
+
+
         return ResponseEntity.ok("Lead with ID " + leadId + " converted to contact successfully");
     }
 }

@@ -1,5 +1,7 @@
 package com.logicq1.crm.modules.activityTImeline.entity;
 
+import com.logicq1.crm.enums.ActivityVisibility;
+import com.logicq1.crm.enums.AuditAction;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -24,8 +26,8 @@ public class ActivityTimeline {
     @Column(nullable = false)
     private UUID entityId;
 
-    @Column(nullable = false)
-    private String actionType;
+    @Enumerated(EnumType.STRING)
+    private AuditAction actionType;
 
     private String fieldName;
 
@@ -37,11 +39,19 @@ public class ActivityTimeline {
 
     private UUID performedBy;
 
+    private UUID organizationId;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    private ActivityVisibility visibility;
+
 
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
     }
+
+
 }
