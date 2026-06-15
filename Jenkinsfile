@@ -19,7 +19,7 @@ pipeline {
         MAVEN_OPTS = '-Xmx1024m -Dmaven.repo.local=.m2/repository'
         DEPLOY_DIR = '/opt/crm'
 
-        SLACK_CHANNEL = '#deployments'
+        SLACK_CHANNEL = '#logic-q1-development'
     }
 
     triggers {
