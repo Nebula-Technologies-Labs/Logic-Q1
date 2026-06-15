@@ -5,6 +5,9 @@ import com.logicq1.crm.enums.AuditAction;
 import com.logicq1.crm.modules.activityTImeline.entity.ActivityTimeline;
 import com.logicq1.crm.modules.activityTImeline.repository.ActivityTimelineRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,14 +30,23 @@ public class ActivityTimelineService {
         );
     }
 
-    public List<ActivityTimeline> getOrganizationFeed(
-            UUID organizationId
+    public Page<ActivityTimeline> getOrganizationFeed(
+            UUID organizationId,
+            int page,
+            int size
     ) {
-        System.out.println(organizationId);
+        size = Math.min(size, 100);
+        Pageable pageable =
+                PageRequest.of(
+                        page,
+                        size
+                );
+
         return repository
                 .findByOrganizationIdAndVisibilityOrderByCreatedAtDesc(
                         organizationId,
-                        ActivityVisibility.ORGANIZATION_FEED
+                        ActivityVisibility.ORGANIZATION_FEED,
+                        pageable
                 );
     }
 }
