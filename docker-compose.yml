@@ -15,7 +15,7 @@ services:
       - .env
 
     ports:
-      - "3210:3210"
+      - "127.0.0.1:3210:3210"
 
     networks:
       - logicq1-network
