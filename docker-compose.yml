@@ -1,4 +1,12 @@
 services:
+  crm-backend:
+
+    build: .
+
+    container_name: crm-backend
+
+    restart: unless-stopped
+
   db:
     image: postgres:15-alpine
     container_name: logicq1-db
@@ -24,10 +32,16 @@ services:
         condition: service_healthy
     env_file:
       - .env
+
     ports:
       - "127.0.0.1:3210:3210"
+
     networks:
       - logicq1-network
+
+networks:
+  logicq1-network:
+    external: true
 
 volumes:
   db-data:
