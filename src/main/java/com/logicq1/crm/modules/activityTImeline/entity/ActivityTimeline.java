@@ -2,9 +2,14 @@ package com.logicq1.crm.modules.activityTImeline.entity;
 
 import com.logicq1.crm.enums.ActivityVisibility;
 import com.logicq1.crm.enums.AuditAction;
+import com.logicq1.crm.modules.activityTImeline.dto.FieldChange;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -29,13 +34,9 @@ public class ActivityTimeline {
     @Enumerated(EnumType.STRING)
     private AuditAction actionType;
 
-    private String fieldName;
-
-    @Column(columnDefinition = "TEXT")
-    private String oldValue;
-
-    @Column(columnDefinition = "TEXT")
-    private String newValue;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private List<FieldChange> changes;
 
     private UUID performedBy;
 

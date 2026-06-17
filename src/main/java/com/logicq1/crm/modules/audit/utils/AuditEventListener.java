@@ -2,6 +2,7 @@ package com.logicq1.crm.modules.audit.utils;
 
 
 import com.logicq1.crm.enums.ActivityVisibility;
+import com.logicq1.crm.modules.activityTImeline.dto.FieldChange;
 import com.logicq1.crm.modules.audit.entity.AuditIgnore;
 import com.logicq1.crm.modules.audit.entity.AuditableEntity;
 import com.logicq1.crm.modules.audit.entity.OrganizationFeed;
@@ -20,6 +21,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -90,6 +93,9 @@ public class AuditEventListener implements
         Object[] oldState = event.getOldState();
         Object[] newState = event.getState();
 
+        List<FieldChange> changes =
+                new ArrayList<>();
+
         for (int i = 0; i < propertyNames.length; i++) {
 
             if (isIgnoredField(
@@ -114,6 +120,18 @@ public class AuditEventListener implements
                             ? ActivityVisibility.ORGANIZATION_FEED
                             : ActivityVisibility.ENTITY_FEED;
 
+
+            changes.add(
+                    new FieldChange(
+                            propertyNames[i],
+                            String.valueOf(oldState[i]),
+                            String.valueOf(newState[i]),
+                            visibility
+                    )
+            );
+        }
+        if (!changes.isEmpty()) {
+
             publisher.publishEvent(
                     new EntityUpdatedEvent(
                             event.getEntity()
@@ -122,10 +140,7 @@ public class AuditEventListener implements
                             extractId(event),
                             extractOrganizationId(),
                             extractPerformedBy(),
-                            propertyNames[i],
-                            String.valueOf(oldState[i]),
-                            String.valueOf(newState[i]),
-                            visibility
+                            changes
                     )
             );
         }

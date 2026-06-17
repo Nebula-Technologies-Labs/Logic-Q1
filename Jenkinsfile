@@ -18,6 +18,8 @@ pipeline {
         SPRING_PROFILES_ACTIVE = 'test'
         MAVEN_OPTS = '-Xmx1024m -Dmaven.repo.local=.m2/repository'
         DEPLOY_DIR = '/opt/crm'
+
+        SLACK_CHANNEL = '#logic-q1-development'
     }
 
     triggers {
@@ -32,6 +34,29 @@ pipeline {
             }
         }
 
+        stage('Notify Build Started') {
+            steps {
+                script {
+
+                    def branch = env.BRANCH_NAME ?: "unknown"
+
+                    slackSend(
+                            channel: env.SLACK_CHANNEL,
+                            color: '#439FE0',
+                            message: """
+BUILD STARTED
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+Branch: ${branch}
+
+${env.BUILD_URL}
+"""
+                    )
+                }
+            }
+        }
+
         stage('Verify Environment') {
             steps {
                 sh 'java -version'
@@ -43,9 +68,9 @@ pipeline {
         stage('Build, Test & Package') {
             steps {
                 sh '''
-                mvn clean package \
-                  -Dspring.profiles.active=test
-            '''
+                    mvn clean package \
+                    -Dspring.profiles.active=test
+                '''
             }
         }
 
@@ -66,18 +91,18 @@ pipeline {
                 echo 'Deploying master branch...'
 
                 sh '''
-                mkdir -p ${DEPLOY_DIR}
+                    mkdir -p ${DEPLOY_DIR}
 
-                rsync -av --delete \
-                  --exclude .git \
-                  --exclude .env \
-                  ./ ${DEPLOY_DIR}/
+                    rsync -av --delete \
+                      --exclude .git \
+                      --exclude .env \
+                      ./ ${DEPLOY_DIR}/
 
-                cd ${DEPLOY_DIR}
+                    cd ${DEPLOY_DIR}
 
-                docker compose down || true
-                docker compose up -d --build
-            '''
+                    docker compose down || true
+                    docker compose up -d --build
+                '''
             }
         }
 
@@ -90,17 +115,13 @@ pipeline {
             steps {
 
                 sh '''
-                echo "Waiting for application startup..."
+                    echo "Waiting for application startup..."
 
-                sleep 20
+                    sleep 20
 
-                docker ps | grep crm-backend
-
-                docker logs crm-backend --tail 50
-
-                docker exec crm-backend \
-                  curl -f http://localhost:3210/auth/register || true
-            '''
+                    docker exec crm-backend \
+                    curl -f http://localhost:3210/auth/register || true
+                '''
             }
         }
     }
@@ -108,15 +129,86 @@ pipeline {
     post {
 
         success {
-            echo 'Build completed successfully.'
+
+            script {
+
+                def branch = env.BRANCH_NAME ?: "unknown"
+
+                def deployMsg = branch == "master"
+                        ? "✅ DEPLOYMENT SUCCESSFUL"
+                        : "✅ PR / BRANCH BUILD SUCCESSFUL"
+
+                slackSend(
+                        channel: env.SLACK_CHANNEL,
+                        color: 'good',
+                        message: """
+${deployMsg}
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+Branch: ${branch}
+
+View Build:
+${env.BUILD_URL}
+"""
+                )
+            }
+        }
+
+        unstable {
+
+            slackSend(
+                    channel: env.SLACK_CHANNEL,
+                    color: 'warning',
+                    message: """
+⚠️ BUILD UNSTABLE
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+Branch: ${env.BRANCH_NAME}
+
+${env.BUILD_URL}
+"""
+            )
         }
 
         failure {
-            echo 'Build failed.'
 
             sh '''
-            docker logs crm-backend --tail 200 || true
-        '''
+                docker logs crm-backend --tail 200 || true
+            '''
+
+            slackSend(
+                    channel: env.SLACK_CHANNEL,
+                    color: 'danger',
+                    message: """
+❌ BUILD FAILED
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+Branch: ${env.BRANCH_NAME}
+
+Investigate:
+${env.BUILD_URL}
+"""
+            )
+        }
+
+        aborted {
+
+            slackSend(
+                    channel: env.SLACK_CHANNEL,
+                    color: '#808080',
+                    message: """
+🛑 BUILD ABORTED
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+Branch: ${env.BRANCH_NAME}
+
+${env.BUILD_URL}
+"""
+            )
         }
 
         always {

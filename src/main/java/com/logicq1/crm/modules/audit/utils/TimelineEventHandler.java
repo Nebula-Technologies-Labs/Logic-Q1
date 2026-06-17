@@ -1,5 +1,8 @@
 package com.logicq1.crm.modules.audit.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.logicq1.crm.enums.ActivityVisibility;
 import com.logicq1.crm.enums.AuditAction;
 import com.logicq1.crm.modules.activityTImeline.entity.ActivityTimeline;
 import com.logicq1.crm.modules.activityTImeline.repository.ActivityTimelineRepository;
@@ -106,7 +109,7 @@ public class TimelineEventHandler {
     )
     public void handle(
             EntityUpdatedEvent event
-    ) {
+    ) throws JsonProcessingException {
 
         ActivityTimeline timeline =
                 new ActivityTimeline();
@@ -122,18 +125,6 @@ public class TimelineEventHandler {
         timeline.setEntityId(
                 event.entityId()
         );
-
-        timeline.setFieldName(
-                event.fieldName()
-        );
-
-        timeline.setOldValue(
-                event.oldValue()
-        );
-
-        timeline.setNewValue(
-                event.newValue()
-        );
         timeline.setOrganizationId(
                 event.organizationId()
         );
@@ -142,8 +133,25 @@ public class TimelineEventHandler {
                 event.performedBy()
         );
 
+        ObjectMapper mapper =
+                new ObjectMapper();
+
+        timeline.setChanges(
+                event.changes()
+        );
+
+        boolean organizationFeed =
+                event.changes().stream()
+                        .anyMatch(
+                                change ->
+                                        change.visibility()
+                                                == ActivityVisibility.ORGANIZATION_FEED
+                        );
+
         timeline.setVisibility(
-                event.visibility()
+                organizationFeed
+                        ? ActivityVisibility.ORGANIZATION_FEED
+                        : ActivityVisibility.ENTITY_FEED
         );
 
         timelineRepository.save(timeline);

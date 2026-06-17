@@ -5,6 +5,7 @@ import com.logicq1.crm.modules.activityTImeline.entity.ActivityTimeline;
 import com.logicq1.crm.modules.activityTImeline.service.ActivityTimelineService;
 import com.logicq1.crm.modules.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,11 +32,15 @@ public class ActivityTimelineController {
     }
 
     @GetMapping("/organization")
-    public List<ActivityTimeline> getOrganizationFeed(
-            @AuthenticationPrincipal User user
+    public Page<ActivityTimeline> getOrganizationFeed(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
     ) {
         return service.getOrganizationFeed(
-                user.getOrganization().getId()
+                user.getOrganization().getId(),
+                page,
+                size
         );
     }
 

@@ -1,7 +1,9 @@
 package com.logicq1.crm.modules.audit.events;
 
 import com.logicq1.crm.enums.ActivityVisibility;
+import com.logicq1.crm.modules.activityTImeline.dto.FieldChange;
 
+import java.util.List;
 import java.util.UUID;
 
 public record EntityUpdatedEvent(
@@ -9,9 +11,6 @@ public record EntityUpdatedEvent(
         UUID entityId,
         UUID organizationId,
         UUID performedBy,
-        String fieldName,
-        String oldValue,
-        String newValue,
-        ActivityVisibility visibility
+        List<FieldChange> changes
 ) {
 }
