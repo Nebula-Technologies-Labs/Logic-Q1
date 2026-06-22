@@ -1,0 +1,12 @@
+package com.logicq1.crm.enums;
+
+public enum DealStage {
+    QUALIFICATION,
+    NEEDS_ANALYSIS,
+    VALUE_PROPOSITION,
+    IDENTIFY_DECISION_MAKERS,
+    PROPOSAL_PRICE_QUOTE,
+    NEGOTIATION_REVIEW,
+    CLOSED_WON,
+    CLOSED_LOST
+}

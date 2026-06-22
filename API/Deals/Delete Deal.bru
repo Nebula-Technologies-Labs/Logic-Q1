@@ -1,0 +1,20 @@
+meta {
+  name: Delete Deal
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/deals/{{dealId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  dealId: 89969304-ccc1-4d9e-bfc9-d83c7cc93b44
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
