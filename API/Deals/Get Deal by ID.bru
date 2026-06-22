@@ -1,0 +1,20 @@
+meta {
+  name: Get Deal by ID
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/deals/{{dealId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  dealId: 514c1d31-d9f8-4869-aaee-c1c4a89cff0b
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
