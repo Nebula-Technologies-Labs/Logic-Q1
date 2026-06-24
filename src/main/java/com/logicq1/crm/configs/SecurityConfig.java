@@ -44,7 +44,16 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/auth/**","/forgotPassword/**").permitAll()
+                        .requestMatchers(
+                                "/auth/login",
+                                "/auth/register-invite",
+                                "/auth/register",
+                                "/auth/forgotPassword/changePassword/",
+                                "/auth/forgotPassword/sendEmail/",
+                                "/auth/forgotPassword/verifyToken/",
+                                "/oauth2/**",
+                                "/api/auth/callback/**"
+                        ).permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/swagger-ui/**","/swagger-ui.html","/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
@@ -57,7 +66,18 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .oauth2Login(oAuth -> oAuth.successHandler(googleOAuthSuccessHandler))
+                .oauth2Login(oAuth -> oAuth
+
+                        .authorizationEndpoint(auth -> auth
+                                .baseUri("/oauth2/authorization")
+                        )
+
+                        .redirectionEndpoint(redir -> redir
+                                .baseUri("/api/auth/callback/*")
+                        )
+
+                        .successHandler(googleOAuthSuccessHandler)
+                )
                 .addFilterBefore(jwtFilter,
                         UsernamePasswordAuthenticationFilter.class);
 

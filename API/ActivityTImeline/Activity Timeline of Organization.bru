@@ -1,0 +1,21 @@
+meta {
+  name: Activity Timeline of Organization
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/activity-timeline/organization?page=0&size=20
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 0
+  size: 20
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

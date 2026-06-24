@@ -1,0 +1,33 @@
+meta {
+  name: Create Deal
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/deals
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "dealName": "Website Redesign",
+    "amount": 50000,
+    "expectedRevenue": 35000,
+    "stage": "QUALIFICATION",
+    "type": "NEW_BUSINESS",
+    "probability": 70,
+    "nextStep": "Schedule follow-up meeting",
+    "leadSource": "WEBSITE",
+    "campaignSource": "Summer Campaign",
+    "closingDate": "2026-07-31",
+    "description": "Potential website redesign project",
+    "contactId": "c8dc2468-8f89-4477-8e31-d164f1a37437"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

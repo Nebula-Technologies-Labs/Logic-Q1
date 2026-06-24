@@ -1,0 +1,37 @@
+meta {
+  name: Update Deal by Id
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/deals/{{dealId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "dealName": "Updated Website Redesign",
+    "amount": 75000,
+    "expectedRevenue": 67500,
+    "stage": "NEGOTIATION_REVIEW",
+    "type": "NEW_BUSINESS",
+    "probability": 90,
+    "nextStep": "Send final quotation",
+    "leadSource": "WEBSITE",
+    "campaignSource": "LinkedIn Campaign",
+    "closingDate": "2026-08-10",
+    "description": "Updated scope discussed"
+    
+  }
+}
+
+vars:pre-request {
+  dealId: 514c1d31-d9f8-4869-aaee-c1c4a89cff0b
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

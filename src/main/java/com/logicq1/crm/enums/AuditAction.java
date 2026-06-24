@@ -9,5 +9,6 @@ public enum AuditAction {
     PASSWORD_RESET,
     EMAIL_VERIFIED,
     ROLE_ASSIGNED,
-    ROLE_REMOVED
+    ROLE_REMOVED,
+    CONVERT
 }

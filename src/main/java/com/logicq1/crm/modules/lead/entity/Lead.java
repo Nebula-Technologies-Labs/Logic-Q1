@@ -4,6 +4,8 @@ import com.logicq1.crm.enums.Industry;
 import com.logicq1.crm.enums.LeadRating;
 import com.logicq1.crm.enums.LeadSource;
 import com.logicq1.crm.enums.LeadStatus;
+import com.logicq1.crm.modules.audit.entity.AuditableEntity;
+import com.logicq1.crm.modules.audit.entity.OrganizationFeed;
 import com.logicq1.crm.modules.organization.entity.Organization;
 import com.logicq1.crm.modules.user.entity.User;
 import jakarta.persistence.*;
@@ -20,6 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@AuditableEntity
 public class Lead {
 
     @Id
@@ -70,16 +73,19 @@ public class Lead {
     @Enumerated(EnumType.STRING)
     private Industry industry;
 
+    @OrganizationFeed
     @Enumerated(EnumType.STRING)
     private LeadStatus leadStatus;
 
     @Enumerated(EnumType.STRING)
     private LeadSource leadSource;
 
+    @OrganizationFeed
     @Enumerated(EnumType.STRING)
     private LeadRating rating;
 
     // Conversion Information
+    @OrganizationFeed
     private Boolean converted;
     private LocalDateTime convertedAt;
 

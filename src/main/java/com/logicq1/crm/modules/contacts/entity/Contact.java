@@ -1,5 +1,8 @@
 package com.logicq1.crm.modules.contacts.entity;
 
+import com.logicq1.crm.modules.audit.entity.AuditIgnore;
+import com.logicq1.crm.modules.audit.entity.AuditableEntity;
+import com.logicq1.crm.modules.audit.entity.OrganizationFeed;
 import com.logicq1.crm.modules.organization.entity.Organization;
 import com.logicq1.crm.modules.user.entity.User;
 import jakarta.persistence.*;
@@ -16,6 +19,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @ToString
+@AuditableEntity
 public class Contact {
 
     @Id
@@ -24,6 +28,7 @@ public class Contact {
 
     private String name;
 
+    @OrganizationFeed
     private String email;
 
     private String secondaryEmail;
@@ -58,8 +63,10 @@ public class Contact {
 
     @CreationTimestamp
     @Column(updatable = false)
+    @AuditIgnore
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @AuditIgnore
     private LocalDateTime updatedAt;
 }

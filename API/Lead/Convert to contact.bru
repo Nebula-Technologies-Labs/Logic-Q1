@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/leads/{{LeadID}}/convert-to-contact?LeadID=
+  url: {{baseUrl}}/api/leads/{{LeadID}}/convert-to-contact
   body: json
   auth: none
-}
-
-params:query {
-  LeadID: 
 }
 
 headers {
@@ -20,5 +16,5 @@ headers {
 }
 
 vars:pre-request {
-  LeadID: 83f2f2ed-c636-4111-9252-a6469d1575d2
+  LeadID: 540f60ad-dc60-4e14-905f-8cc3e1b448e6
 }

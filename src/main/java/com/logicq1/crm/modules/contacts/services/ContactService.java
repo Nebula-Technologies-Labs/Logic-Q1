@@ -1,6 +1,5 @@
 package com.logicq1.crm.modules.contacts.services;
 
-import com.logicq1.crm.modules.activityTImeline.service.ActivityTimelineService;
 import com.logicq1.crm.modules.contacts.dto.ContactDto;
 import com.logicq1.crm.modules.contacts.dto.CreateContactDto;
 import com.logicq1.crm.modules.contacts.entity.Contact;
@@ -12,8 +11,7 @@ import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.modules.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.BeanUtils;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,7 +31,6 @@ public class ContactService {
     private ContactRepository contactRepository;
     private ContactMapper contactMapper;
     private UserRepository userRepository;
-    private ActivityTimelineService activityTimelineService;
 
     public void createContact(CreateContactDto data, User user) {
         if (contactRepository.findByEmailAndOrganization(
@@ -51,12 +48,6 @@ public class ContactService {
         contact.setOrganization(user.getOrganization());
 
         contactRepository.save(contact);
-
-        activityTimelineService.logCreate(
-                "CONTACT",
-                contact.getId(),
-                user.getId()
-        );
     }
 
     public List<ContactDto> getContactByOwner(User owner) {
@@ -135,14 +126,6 @@ public class ContactService {
 
             List<Contact> savedContacts = contactRepository.saveAll(contacts);
 
-            for (Contact contact : savedContacts) {
-                activityTimelineService.logCreate(
-                        "CONTACT",
-                        contact.getId(),
-                        owner.getId()
-                );
-            }
-
         } catch (Exception e) {
             throw new RuntimeException("Failed to import contacts", e);
         }
@@ -162,6 +145,8 @@ public class ContactService {
         };
     }
 
+
+
     public byte[] exportContacts(Organization organization) {
 
         List<Contact> contacts =
@@ -170,63 +155,86 @@ public class ContactService {
                 );
 
         try (
-                Workbook workbook = new XSSFWorkbook();
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
+                ByteArrayOutputStream outputStream =
+                        new ByteArrayOutputStream()
         ) {
 
-            Sheet sheet = workbook.createSheet("Contacts");
+            SXSSFWorkbook workbook =
+                    new SXSSFWorkbook(500);
 
-            String[] headers = {
-                    "Name",
-                    "Email",
-                    "Secondary Email",
-                    "Phone Number",
-                    "Description",
-                    "Note",
-                    "Department",
-                    "Contact Source",
-                    "Title",
-                    "Address",
-                    "Country",
-                    "State",
-                    "City"
-            };
+            try {
 
-            Row headerRow = sheet.createRow(0);
+                Sheet sheet =
+                        workbook.createSheet("Contacts");
 
-            for (int i = 0; i < headers.length; i++) {
-                headerRow.createCell(i)
-                        .setCellValue(headers[i]);
+                String[] headers = {
+                        "Name",
+                        "Email",
+                        "Secondary Email",
+                        "Phone Number",
+                        "Description",
+                        "Note",
+                        "Department",
+                        "Contact Source",
+                        "Title",
+                        "Address",
+                        "Country",
+                        "State",
+                        "City"
+                };
+
+                Row headerRow =
+                        sheet.createRow(0);
+
+                for (int i = 0; i < headers.length; i++) {
+
+                    headerRow.createCell(i)
+                            .setCellValue(headers[i]);
+                }
+
+                int rowNumber = 1;
+
+                for (Contact contact : contacts) {
+
+                    Row row =
+                            sheet.createRow(rowNumber++);
+
+                    row.createCell(0).setCellValue(nullSafe(contact.getName()));
+                    row.createCell(1).setCellValue(nullSafe(contact.getEmail()));
+                    row.createCell(2).setCellValue(nullSafe(contact.getSecondaryEmail()));
+                    row.createCell(3).setCellValue(nullSafe(contact.getPhoneNumber()));
+                    row.createCell(4).setCellValue(nullSafe(contact.getDescription()));
+                    row.createCell(5).setCellValue(nullSafe(contact.getNote()));
+                    row.createCell(6).setCellValue(nullSafe(contact.getDepartment()));
+                    row.createCell(7).setCellValue(nullSafe(contact.getContactSource()));
+                    row.createCell(8).setCellValue(nullSafe(contact.getTitle()));
+                    row.createCell(9).setCellValue(nullSafe(contact.getAddress()));
+                    row.createCell(10).setCellValue(nullSafe(contact.getCountry()));
+                    row.createCell(11).setCellValue(nullSafe(contact.getState()));
+                    row.createCell(12).setCellValue(nullSafe(contact.getCity()));
+                }
+
+                workbook.write(outputStream);
+
+                return outputStream.toByteArray();
+
+            } finally {
+
+                workbook.dispose();
+                workbook.close();
             }
-
-            int rowNumber = 1;
-
-            for (Contact contact : contacts) {
-
-                Row row = sheet.createRow(rowNumber++);
-
-                row.createCell(0).setCellValue(contact.getName());
-                row.createCell(1).setCellValue(contact.getEmail());
-                row.createCell(2).setCellValue(contact.getSecondaryEmail());
-                row.createCell(3).setCellValue(contact.getPhoneNumber());
-                row.createCell(4).setCellValue(contact.getDescription());
-                row.createCell(5).setCellValue(contact.getNote());
-                row.createCell(6).setCellValue(contact.getDepartment());
-                row.createCell(7).setCellValue(contact.getContactSource());
-                row.createCell(8).setCellValue(contact.getTitle());
-                row.createCell(9).setCellValue(contact.getAddress());
-                row.createCell(10).setCellValue(contact.getCountry());
-                row.createCell(11).setCellValue(contact.getState());
-                row.createCell(12).setCellValue(contact.getCity());
-            }
-
-            workbook.write(outputStream);
-
-            return outputStream.toByteArray();
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to export contacts", e);
+
+            throw new RuntimeException(
+                    "Failed to export contacts",
+                    e
+            );
         }
+    }
+
+    private String nullSafe(String value) {
+        return value == null ? "" : value;
     }
 
     public ContactDto updateContact(
@@ -246,18 +254,8 @@ public class ContactService {
 
         validateOrganizationAccess(contact, user);
 
-        Contact oldContact = new Contact();
-        BeanUtils.copyProperties(contact, oldContact);
-
         contactMapper.updateContactFromDto(data, contact);
 
-        activityTimelineService.logChanges(
-                "CONTACT",
-                contact.getId(),
-                oldContact,
-                contact,
-                user.getId()
-        );
 
         contact = contactRepository.save(contact);
 
@@ -275,11 +273,6 @@ public class ContactService {
                         ));
         validateOrganizationAccess(contact, user);
 
-        activityTimelineService.logDelete(
-                "CONTACT",
-                contact.getId(),
-                user.getId()
-        );
 
         contactRepository.delete(contact);
     }
@@ -302,6 +295,9 @@ public class ContactService {
         // It would typically involve fetching the lead by ID, creating a new contact based on the lead's information,
         // saving the contact, and then updating the lead's status to "converted" or similar.
         // For now, we'll just return a placeholder response.
+
+
+
         return ResponseEntity.ok("Lead with ID " + leadId + " converted to contact successfully");
     }
 }
