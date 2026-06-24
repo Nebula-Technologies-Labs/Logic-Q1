@@ -50,8 +50,6 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
-    @JsonIgnore
     private String password;
 
     private String phoneNumber;

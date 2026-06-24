@@ -1,0 +1,23 @@
+meta {
+  name: Register Invite
+  type: http
+  seq: 3
+  tags: [
+    Auth
+  ]
+}
+
+post {
+  url: {{baseUrl}}/auth/register-invite
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "token": "{{inviteToken}}",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "password": "password123"
+  }
+}
