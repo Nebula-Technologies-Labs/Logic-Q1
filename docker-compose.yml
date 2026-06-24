@@ -1,37 +1,17 @@
 services:
-  crm-backend:
 
+  crm-backend:
     build: .
 
     container_name: crm-backend
 
     restart: unless-stopped
 
-  db:
-    image: postgres:15-alpine
-    container_name: logicq1-db
-    environment:
-      POSTGRES_USER: logicq1admin
-      POSTGRES_PASSWORD: "LOGIC-Q1-DB"
-      POSTGRES_DB: logicdb
-    ports:
-      - "5432:5432"
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U logicq1admin -d logicdb"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-  backend:
-    build: .
-    container_name: logicq1-backend
-    depends_on:
-      db:
-        condition: service_healthy
     env_file:
       - .env
+
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
 
     ports:
       - "127.0.0.1:3210:3210"
@@ -40,8 +20,6 @@ services:
       - logicq1-network
 
 networks:
+
   logicq1-network:
     external: true
-
-volumes:
-  db-data:
