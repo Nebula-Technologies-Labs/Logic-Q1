@@ -3,8 +3,8 @@ package com.logicq1.crm.modules.auth.service;
 import com.logicq1.crm.enums.AuthProvider;
 import com.logicq1.crm.enums.InviteStatus;
 import com.logicq1.crm.enums.UserRole;
+import com.logicq1.crm.modules.auth.dto.AuthResponse;
 import com.logicq1.crm.modules.auth.dto.LoginRequest;
-import com.logicq1.crm.modules.auth.dto.LoginResponse;
 import com.logicq1.crm.modules.auth.dto.RegisterInviteRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterRequest;
 import com.logicq1.crm.modules.organization.entity.OrganizationInvite;
@@ -17,9 +17,15 @@ import com.logicq1.crm.modules.user.repository.UserRepository;
 import com.logicq1.crm.services.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -40,35 +46,88 @@ public class AuthService {
     private final JwtUtil jwtService;
 
 
-    public void registerUser(RegisterRequest data) throws RuntimeException {
-
-        Optional<User> userExists = userRepository.findByEmail(data.getEmail());
-
-        if(userExists.isPresent()){
+    public AuthResponse registerUser(
+            RegisterRequest data
+    ) {
+        Optional<User> userExists =
+                userRepository.findByEmail(
+                        data.getEmail()
+                );
+        if (
+                userExists.isPresent()
+        ) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Email already in use"
             );
         }
 
-        Roles memberRole = rolesRepository
-                .findByRole(UserRole.MEMBER)
-                .orElseThrow(() ->
-                        new RuntimeException("Default MEMBER role not found")
+        Roles memberRole =
+                rolesRepository
+                        .findByRole(
+                                UserRole.MEMBER
+                        )
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Default MEMBER role not found"
+                                )
+                        );
+
+        User user =
+                userMapper.toUser(
+                        data
                 );
 
-        User user = userMapper.toUser(data);
+        user.setPassword(
+                passwordEncoder.encode(
+                        data.getPassword()
+                )
+        );
 
-        user.setPassword(passwordEncoder.encode(data.getPassword()));
-        user.setOnBoarded(false);
-        user.setAuthBy(AuthProvider.LOCAL);
+        user.setOnBoarded(
+                false
+        );
 
-        user.setIsActive(true);
-        user.setEmailVerified(false);
+        user.setAuthBy(
+                AuthProvider.LOCAL
+        );
 
-        user.setRole(memberRole);
+        user.setIsActive(
+                true
+        );
 
-        userRepository.save(user);
+        user.setEmailVerified(
+                false
+        );
+
+        user.setRole(
+                memberRole
+        );
+
+        user =
+                userRepository.save(
+                        user
+                );
+
+        String token =
+                jwtService.generateToken(
+                        user.getEmail()
+                );
+        return AuthResponse.builder()
+
+                .status(true)
+                .message(
+                        "User registered successfully"
+                )
+                .token(
+                        token
+                )
+                .user(
+                        buildUserData(
+                                user
+                        )
+                )
+                .build();
     }
 
     @Transactional
@@ -136,23 +195,253 @@ public class AuthService {
 
         organizationInviteRepository.save(invite);
     }
-    public LoginResponse login(LoginRequest request) {
+    public AuthResponse login(
+            LoginRequest request
+    ) {
 
         authManager.authenticate(
+
                 new UsernamePasswordAuthenticationToken(
+
                         request.getEmail(),
+
                         request.getPassword()
+
                 )
+
         );
+
+        User user =
+                userRepository
+
+                        .findByEmail(
+                                request.getEmail()
+                        )
+
+                        .orElseThrow(
+                                () -> new UsernameNotFoundException(
+                                        "User not found"
+                                )
+                        );
 
         userRepository.updateLastLogin(
+
                 request.getEmail(),
+
                 LocalDateTime.now()
+
         );
 
-        return LoginResponse.builder()
-                .token(jwtService.generateToken(request.getEmail()))
+        String token =
+                jwtService.generateToken(
+                        request.getEmail()
+                );
+
+        return AuthResponse.builder()
+
+                .status(true)
+
+                .message(
+                        "Login successful"
+                )
+
+                .token(
+                        token
+                )
+
+                .user(
+                        buildUserData(
+                                user
+                        )
+                )
+
                 .build();
+    }
+
+    public AuthResponse getCurrentUser() {
+
+        Authentication authentication =
+
+                SecurityContextHolder
+
+                        .getContext()
+
+                        .getAuthentication();
+
+        if (
+
+                authentication == null
+
+                        ||
+
+                        !authentication.isAuthenticated()
+
+                        ||
+
+                        authentication instanceof AnonymousAuthenticationToken
+
+        ) {
+
+            throw new BadCredentialsException(
+                    "Unauthenticated"
+            );
+
+        }
+
+        String email =
+                authentication.getName();
+
+        User user =
+                userRepository
+
+                        .findByEmail(
+                                email
+                        )
+
+                        .orElseThrow(
+                                () -> new UsernameNotFoundException(
+                                        "User not found"
+                                )
+                        );
+
+        return AuthResponse.builder()
+
+                .status(true)
+
+                .message(
+                        "User fetched successfully"
+                )
+
+                .user(
+                        buildUserData(
+                                user
+                        )
+                )
+
+                .build();
+    }
+
+    private AuthResponse.UserData buildUserData(
+            User user
+    ) {
+
+        return AuthResponse.UserData.builder()
+
+                .id(user.getId().toString())
+
+                .email(user.getEmail())
+
+                .firstName(user.getFirstName())
+
+                .lastName(user.getLastName())
+
+                .profileImage(user.getProfileImage())
+
+                .jobTitle(user.getJobTitle())
+
+                .phoneNumber(user.getPhoneNumber())
+
+                .department(user.getDepartment())
+
+                .onBoarded(user.getOnBoarded())
+
+                .emailVerified(user.getEmailVerified())
+
+                .orgId(
+                        user.getOrganization() != null
+                                ? user.getOrganization().getId()
+                                : null
+                )
+
+                .roleId(
+                        user.getRole() != null
+                                ? user.getRole().getId()
+                                : null
+                )
+
+                .build();
+    }
+    @Transactional
+    public User handleGoogleLogin(
+            OAuth2User oauthUser
+    ) {
+
+        String email =
+                oauthUser.getAttribute(
+                        "email"
+                );
+
+        return userRepository
+
+                .findByEmail(email)
+
+                .orElseGet(() -> {
+
+                    Roles memberRole =
+
+                            rolesRepository
+
+                                    .findByRole(
+                                            UserRole.MEMBER
+                                    )
+
+                                    .orElseThrow(
+                                            () -> new RuntimeException(
+                                                    "Default MEMBER role not found"
+                                            )
+                                    );
+
+                    User user =
+
+                            User.builder()
+
+                                    .email(email)
+
+                                    .firstName(
+                                            oauthUser.getAttribute(
+                                                    "given_name"
+                                            )
+                                    )
+
+                                    .lastName(
+                                            oauthUser.getAttribute(
+                                                    "family_name"
+                                            )
+                                    )
+
+                                    .profileImage(
+                                            oauthUser.getAttribute(
+                                                    "picture"
+                                            )
+                                    )
+
+                                    .authBy(
+                                            AuthProvider.GOOGLE
+                                    )
+
+                                    .emailVerified(
+                                            true
+                                    )
+
+                                    .onBoarded(
+                                            false
+                                    )
+
+                                    .isActive(
+                                            true
+                                    )
+
+                                    .role(
+                                            memberRole
+                                    )
+
+                                    .build();
+
+                    return userRepository.save(
+                            user
+                    );
+                });
+
     }
 
 }

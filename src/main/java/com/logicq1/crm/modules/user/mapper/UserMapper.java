@@ -18,4 +18,6 @@ public interface UserMapper {
     @Mapping(target = "roleId", source = "role.id")
     @Mapping(target = "createdById", source = "createdBy.id")
     UserResponse toResponse(User user);
+
+
 }
