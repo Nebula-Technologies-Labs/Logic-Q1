@@ -10,6 +10,9 @@ services:
     env_file:
       - .env
 
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+
     ports:
       - "127.0.0.1:3210:3210"
 
