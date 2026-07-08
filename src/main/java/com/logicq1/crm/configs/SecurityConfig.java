@@ -46,12 +46,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/auth/login",
-                                "/auth/register-invite",
                                 "/auth/register",
-                                "/auth/forgotPassword/changePassword/",
-                                "/auth/forgotPassword/sendEmail/",
-                                "/auth/forgotPassword/verifyToken/",
+                                "/auth/register-invite",
+                                "/auth/refresh",
+                                "/auth/forgotPassword/*",
                                 "/oauth2/**",
+                                "/auth/logout",
                                 "/api/auth/callback/**"
                         ).permitAll()
                         .requestMatchers("/error").permitAll()

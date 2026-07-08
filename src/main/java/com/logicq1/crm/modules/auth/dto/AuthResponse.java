@@ -17,7 +17,7 @@ public class AuthResponse {
 
     private String message;
 
-    private String token;
+    private String accessToken;
 
     private UserData user;
 

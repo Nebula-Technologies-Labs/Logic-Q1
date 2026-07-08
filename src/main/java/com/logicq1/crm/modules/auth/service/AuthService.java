@@ -15,9 +15,10 @@ import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.modules.user.mapper.UserMapper;
 import com.logicq1.crm.modules.user.repository.UserRepository;
 import com.logicq1.crm.services.jwt.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,10 +45,14 @@ public class AuthService {
     private final RolesRepository rolesRepository;
     private final AuthenticationManager authManager;
     private final JwtUtil jwtService;
+    private final TokenService tokenService;
+    private final CookieService cookieService;
+    private final CurrentUserService currentUserService;
 
 
     public AuthResponse registerUser(
-            RegisterRequest data
+            RegisterRequest data,
+            HttpServletResponse response
     ) {
         Optional<User> userExists =
                 userRepository.findByEmail(
@@ -62,14 +67,14 @@ public class AuthService {
             );
         }
 
-        Roles memberRole =
+        Roles defaultRole =
                 rolesRepository
                         .findByRole(
-                                UserRole.MEMBER
+                                UserRole.ORG_ADMIN
                         )
                         .orElseThrow(
                                 () -> new RuntimeException(
-                                        "Default MEMBER role not found"
+                                        "Default ORG_ADMIN role not found"
                                 )
                         );
 
@@ -101,7 +106,7 @@ public class AuthService {
         );
 
         user.setRole(
-                memberRole
+                defaultRole
         );
 
         user =
@@ -109,18 +114,23 @@ public class AuthService {
                         user
                 );
 
-        String token =
-                jwtService.generateToken(
-                        user.getEmail()
-                );
-        return AuthResponse.builder()
 
+
+        TokenService.TokenPair tokenPair =
+                tokenService.createTokenPair(user);
+
+        cookieService.addRefreshCookie(
+                response,
+                tokenPair.refreshToken()
+        );
+
+        return AuthResponse.builder()
                 .status(true)
                 .message(
                         "User registered successfully"
                 )
-                .token(
-                        token
+                .accessToken(
+                        tokenPair.accessToken()
                 )
                 .user(
                         buildUserData(
@@ -196,7 +206,8 @@ public class AuthService {
         organizationInviteRepository.save(invite);
     }
     public AuthResponse login(
-            LoginRequest request
+            LoginRequest request,
+            HttpServletResponse response
     ) {
 
         authManager.authenticate(
@@ -232,93 +243,117 @@ public class AuthService {
 
         );
 
-        String token =
-                jwtService.generateToken(
-                        request.getEmail()
-                );
+        TokenService.TokenPair tokenPair =
+                tokenService.createTokenPair(user);
+
+        cookieService.addRefreshCookie(
+                response,
+                tokenPair.refreshToken()
+        );
 
         return AuthResponse.builder()
-
                 .status(true)
-
                 .message(
                         "Login successful"
                 )
-
-                .token(
-                        token
+                .accessToken(
+                        tokenPair.accessToken()
                 )
-
                 .user(
                         buildUserData(
                                 user
                         )
                 )
-
                 .build();
     }
 
     public AuthResponse getCurrentUser() {
 
-        Authentication authentication =
-
-                SecurityContextHolder
-
-                        .getContext()
-
-                        .getAuthentication();
-
-        if (
-
-                authentication == null
-
-                        ||
-
-                        !authentication.isAuthenticated()
-
-                        ||
-
-                        authentication instanceof AnonymousAuthenticationToken
-
-        ) {
-
-            throw new BadCredentialsException(
-                    "Unauthenticated"
-            );
-
-        }
-
-        String email =
-                authentication.getName();
-
         User user =
-                userRepository
-
-                        .findByEmail(
-                                email
-                        )
-
-                        .orElseThrow(
-                                () -> new UsernameNotFoundException(
-                                        "User not found"
-                                )
-                        );
+                currentUserService.getCurrentUser();
 
         return AuthResponse.builder()
-
                 .status(true)
-
                 .message(
                         "User fetched successfully"
                 )
-
                 .user(
                         buildUserData(
                                 user
                         )
                 )
-
                 .build();
+    }
+    public AuthResponse refresh(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+
+        String refreshToken =
+                cookieService.extractRefreshToken(request);
+
+        if (refreshToken == null) {
+            throw new BadCredentialsException(
+                    "Refresh token missing"
+            );
+        }
+
+        TokenService.TokenPair tokenPair =
+                tokenService.refresh(refreshToken);
+
+        cookieService.addRefreshCookie(
+                response,
+                tokenPair.refreshToken()
+        );
+
+        User user = userRepository
+                .findByEmail(
+                        jwtService.extractUsername(
+                                tokenPair.accessToken()
+                        )
+                )
+                .orElseThrow();
+
+        return AuthResponse.builder()
+                .status(true)
+                .message("Token refreshed")
+                .accessToken(tokenPair.accessToken())
+                .user(buildUserData(user))
+                .build();
+    }
+
+    public void logout(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+
+        String refreshToken =
+                cookieService.extractRefreshToken(request);
+
+        if (refreshToken != null) {
+            tokenService.logout(refreshToken);
+        }
+
+        cookieService.clearRefreshCookie(response);
+    }
+
+    public void logoutAll(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        User user = userRepository
+                .findByEmail(authentication.getName())
+                .orElseThrow();
+
+        tokenService.logoutAll(user);
+
+        cookieService.clearRefreshCookie(response);
     }
 
     private AuthResponse.UserData buildUserData(
