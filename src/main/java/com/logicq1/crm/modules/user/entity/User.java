@@ -97,6 +97,9 @@ public class User implements UserDetails {
     @JoinColumn(name = "role_id")
     private Roles role;
 
+    @Column(nullable = false)
+    private boolean isTermsAccepted;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

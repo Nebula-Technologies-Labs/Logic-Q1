@@ -1,6 +1,8 @@
 package com.logicq1.crm.services.OAuth.Google.handler;
 
 import com.logicq1.crm.modules.auth.service.OAuthService;
+import com.logicq1.crm.modules.auth.service.CookieService;
+import com.logicq1.crm.modules.auth.service.TokenService;
 import com.logicq1.crm.modules.user.entity.User;
 import com.logicq1.crm.services.jwt.JwtUtil;
 import jakarta.servlet.ServletException;
@@ -20,15 +22,22 @@ public class GoogleOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     private final JwtUtil jwtUtil;
     private final OAuthService oAuthService;
+    private final TokenService tokenService;
+    private final CookieService cookieService;
     @Value("${app.frontend-url}")
     private final String frontendUrl;
 
     public GoogleOAuthSuccessHandler(
-            JwtUtil jwtUtil, OAuthService oAuthService,
+            JwtUtil jwtUtil,
+            OAuthService oAuthService,
+            TokenService tokenService,
+            CookieService cookieService,
             @Value("${app.frontend-url}") String frontendUrl
     ) {
         this.jwtUtil = jwtUtil;
         this.oAuthService = oAuthService;
+        this.tokenService = tokenService;
+        this.cookieService = cookieService;
         this.frontendUrl = frontendUrl;
     }
 
@@ -47,11 +56,13 @@ public class GoogleOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                                 oauthUser
                         );
 
-        String token =
+        TokenService.TokenPair tokenPair =
+                tokenService.createTokenPair(user);
 
-                jwtUtil.generateToken(
-                        user.getEmail()
-                );
+        cookieService.addRefreshCookie(
+                response,
+                tokenPair.refreshToken()
+        );
 
         String targetUrl = UriComponentsBuilder
 
@@ -60,7 +71,7 @@ public class GoogleOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                 )
                 .queryParam(
                         "token",
-                        token
+                        tokenPair.accessToken()
                 )
                 .build()
                 .toUriString();

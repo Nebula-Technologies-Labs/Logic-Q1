@@ -5,6 +5,8 @@ import com.logicq1.crm.modules.auth.dto.LoginRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterInviteRequest;
 import com.logicq1.crm.modules.auth.dto.RegisterRequest;
 import com.logicq1.crm.modules.auth.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
-            @RequestBody RegisterRequest request
+            @RequestBody RegisterRequest request,
+            HttpServletResponse response
     ) {
         return ResponseEntity
                 .status(
@@ -31,7 +34,8 @@ public class AuthController {
                 )
                 .body(
                         authService.registerUser(
-                                request
+                                request,
+                                response
                         )
                 );
     }
@@ -39,12 +43,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @RequestBody LoginRequest request
+            @RequestBody LoginRequest request,
+            HttpServletResponse response
     ) {
         try {
             return ResponseEntity.ok(
                     authService.login(
-                            request
+                            request,
+                            response
                     )
             );
         }
@@ -80,4 +86,52 @@ public class AuthController {
         return ResponseEntity.ok(authService.getCurrentUser());
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        return ResponseEntity.ok(
+                authService.refresh(
+                        request,
+                        response
+                )
+        );
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        authService.logout(
+                request,
+                response
+        );
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "status", true,
+                        "message", "Logged out successfully"
+                )
+        );
+    }
+
+    @PostMapping("/logout-all")
+    public ResponseEntity<?> logoutAll(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        authService.logoutAll(
+                request,
+                response
+        );
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "status", true,
+                        "message", "Logged out from all devices"
+                )
+        );
+    }
 }
